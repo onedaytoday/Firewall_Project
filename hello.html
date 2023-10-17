@@ -1,0 +1,17 @@
+<head>
+<script>
+    $("#id_of_button_to_submit").click(function(){
+     $.ajax({url: "/", success: function(result){
+            //do things with your result
+            $("#div1").html(result);
+     }});
+    });
+
+</script>
+</head>
+
+<body>
+ <form action="http://127.0.0.1:5000/" method="post">
+    <input type="submit" name="foo" value="upvote"/>
+</form>
+</body>
