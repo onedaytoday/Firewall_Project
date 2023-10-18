@@ -29,5 +29,6 @@ def server_request_handler():
 
 # openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
 if __name__ == "__main__":
-    app.run(ssl_context=('cert.pem', 'key.pem'))
+    app.run()
+    #app.run(ssl_context=('cert.pem', 'key.pem'))
     #app.run(ssl_context='adhoc')
