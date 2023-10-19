@@ -1,4 +1,3 @@
-
 class IPAddress:
     def __init__(self, firstocted, secondocted, thirdocted, fourthocted, cidr=32):
         self.IPocteds = [0, 0, 0, 0]
@@ -7,7 +6,7 @@ class IPAddress:
         self.IPocteds[1] = secondocted
         self.IPocteds[2] = thirdocted
         self.IPocteds[3] = fourthocted
-        self.IP = self.converting_ints_to_32bit_addresss(firstocted,secondocted,thirdocted,fourthocted)
+        self.IP = self.converting_ints_to_32bit_addresss(firstocted, secondocted, thirdocted, fourthocted)
 
     @staticmethod
     def make_ip_from_dot_notation_ip_string(str):
@@ -18,16 +17,16 @@ class IPAddress:
                 octed.append(int(temp))
                 temp = ""
             elif '0' <= s <= '9':
-                temp = temp+s
+                temp = temp + s
             else:
                 Exception()
         octed.append(int(temp))
 
         output = None
         if len(octed) == 4:
-            output = IPAddress(octed[0],octed[1],octed[2],octed[3])
-        elif len(octed) ==5:
-            output = IPAddress(octed[0],octed[1],octed[2],octed[3],cidr=octed[4])
+            output = IPAddress(octed[0], octed[1], octed[2], octed[3])
+        elif len(octed) == 5:
+            output = IPAddress(octed[0], octed[1], octed[2], octed[3], cidr=octed[4])
         else:
             Exception()
         return output
@@ -57,7 +56,7 @@ class IPAddress:
         return self.add_four_int_by_bits(a, b, c, d)
 
     def calculate_network_address(self):
-        return self.IP & 0xFFFFFFFF << (32-self.CIDR)
+        return self.IP & 0xFFFFFFFF << (32 - self.CIDR)
 
     def calculate_network_address_with_cidr(self, cidr):
         return self.IP & 0xFFFFFFFF << (32 - cidr)
@@ -67,7 +66,6 @@ class IPAddress:
 
     def print_dot_notation(self):
         print(f"{self.IPocteds[0]}.{self.IPocteds[1]}.{self.IPocteds[2]}.{self.IPocteds[3]}/{self.CIDR}")
-
 
     def to_string(self):
         return (f"{self.IPocteds[0]}.{self.IPocteds[1]}.{self.IPocteds[2]}.{self.IPocteds[3]}/{self.CIDR}")
@@ -97,6 +95,3 @@ class IPAddress:
         if networkPortionOfIP == networkAddressRange:
             return True
         return False
-
-
-

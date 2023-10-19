@@ -1,8 +1,13 @@
-from flask import Flask, request, json
+from flask import Flask, request, json,render_template
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
 cors = CORS(app)
+
+
+@app.route(rule='/')
+def home_page():
+    return render_template("hello.html")
 
 
 @app.route('/', methods=['POST'])
@@ -27,6 +32,8 @@ def server_request_handler():
     )
     return response
 
+
+#FLASK_APP=server.py flask run --cert=adhoc
 # openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
 if __name__ == "__main__":
     app.run()
