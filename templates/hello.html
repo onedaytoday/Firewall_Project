@@ -7,7 +7,7 @@
 <script>
         function sendData(){
         document.getElementById('input').innerHTML = 'yes'
-        var url = "http://127.0.0.1:5000/server"
+        var url = "http://127.0.0.1:5000/test"
         const xhr = new XMLHttpRequest();
         xhr.open("POST", url)
         xhr.setRequestHeader("Content-Type", "application/json")
@@ -19,7 +19,9 @@
                 }
               };
         var code = document.getElementById('code').value
-        output = JSON.stringify({value:code, random:999})
+        var serial = document.getElementById('serial').value
+        var TestPacket= {src: 1, des:2}
+        output = JSON.stringify({code:code, serial:serial, TestPacket: TestPacket})
         xhr.send(output);
         xhr.onload = function(){
                 document.getElementById('input').innerHTML = xhr.response
@@ -30,8 +32,10 @@
 
 </script>
 <p id="input">NO</p>
- <label for="code">Code:</label>
+<label for="code">Code:</label>
 <input type="text" id="code" name="code"><br><br>
+<label for="code">Serial:</label>
+<input type="text" id="serial" name="serial"><br><br>
 <button onclick="sendData()">Click me</button>
 
 

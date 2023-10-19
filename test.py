@@ -28,10 +28,6 @@ def test_and_print_firewall(firewall, packet):
     print(test_firewall(firewall, packet))
     print()
 
-def test_with_dashboard():
-    DashboardSession = auth.MerakiDash(key.API_KEY, key.MX_SERIAL)
-    MXFirewall = DashboardSession.get_firewall()
-    MXFirewall.print()
 
 
 def test():
@@ -86,6 +82,18 @@ def test_IP_dot_to_IP_obj():
     result = IPaddress.IPAddress.make_ip_from_dot_notation_ip_string("10.0.0.1/31")
     result.print_dot_notation()
 
+
+def test_with_dashboard():
+    DashboardSession = auth.MerakiDash(key.API_KEY, key.MX_SERIAL)
+    MXFirewall = DashboardSession.get_firewall()
+    MXFirewall.print()
+    TestPacket = Packet.Packet(srcport=0,
+                               destport=0,
+                               source_ip=IPaddress.IPAddress.make_ip_from_dot_notation_ip_string('172.16.1.4'),
+                               destination_ip=IPaddress.IPAddress.make_ip_from_dot_notation_ip_string('172.16.2.1')
+                               )
+    TestPacket.print()
+    print(MXFirewall.filter(TestPacket))
 
 if __name__ == '__main__':
     test_with_dashboard()

@@ -16,5 +16,7 @@ def test_fire_wall_parsing():
         print(rule)
 
 
+
 if __name__ == '__main__':
     test_fire_wall_parsing()
+

@@ -36,7 +36,7 @@ class MerakiDash:
         policy = Layer3Firewall.Layer3Firewall.Decision.NO_MATCH
         if rule.get('policy') == 'allow':
             policy = Layer3Firewall.Layer3Firewall.Decision.Allow
-        elif rule.get('policy') == 'block':
+        elif rule.get('policy') == 'deny':
             policy = Layer3Firewall.Layer3Firewall.Decision.Block
 
         #srcPort
@@ -54,12 +54,16 @@ class MerakiDash:
         #srcIP
         if rule.get('srcCidr') == 'Any':
             src_ip_range = None
+        elif 'VLAN' in rule.get('srcCidr'):
+            print('Vlan')
         else:
             src_ip_range = IPaddress.IPAddress.make_ip_from_dot_notation_ip_string(rule.get('srcCidr'))
 
         #destIP
         if rule.get('destCidr') == 'Any':
             dest_ip_range = None
+        elif 'VLAN' in rule.get('destCidr'):
+            print('Vlan')
         else:
             dest_ip_range = IPaddress.IPAddress.make_ip_from_dot_notation_ip_string(rule.get('destCidr'))
 
@@ -73,4 +77,7 @@ class MerakiDash:
         )
 
         return output
+    def get_vlan_IP(self, s):
+
+        return
 
