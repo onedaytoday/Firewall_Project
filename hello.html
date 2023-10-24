@@ -26,9 +26,34 @@
                 console.log(xhr.response)
                 }
         }
+        function send_Serialapi(){
+                var Snum = document.getElementById("Snum").value;
+                var Api = document.getElementById("Api").value;
+
+                var data = {
+                        Snum: Snum,
+                        Api: Api
+                };
+
+                var jsonData = JSON.stringify(data);
+
+                fetch('/send_data', {
+                        method:'POST',
+                        body: jsonData
+                })
+
+        }
 
 
 </script>
+
+<h1>To get started please enter your serial number below</h1>
+<input type="text"  name="Snum" id="Snum" placeholder="Serial number"><br><br>
+<h1>Now please enter your API</h1>
+<input type="text" name="API" id="Api" placeholder="API Key"><br><br>
+<button onclick="send_Serialapi">Go To Device</button>
+
+
 <p id="input">NO</p>
  <label for="code">Code:</label>
 <input type="text" id="code" name="code"><br><br>
