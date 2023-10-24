@@ -30,8 +30,13 @@ class Layer3Firewall:
 
     class Decision(Enum):
         NO_MATCH = 0
-        Allow = 1
-        Block = 2
+        Allow = 'Allow'
+        Block = 'Block'
+
+        def print(self):
+            print(self.value)
+        def get_value(self):
+            return self.value
 
     class FirewallRule:
         def __init__(self, decision, src_ip_range, dest_ip_range, description="", protocol=None, srcport=0, destport=0):
@@ -85,4 +90,4 @@ class Layer3Firewall:
             else:
                 desIP = self.dest_ip_range.to_string()
 
-            print(f'{self.action} {srcPort} {srcIP} {desIP} {desPort}')
+            print(f'{self.description} {self.action} {srcPort} {srcIP} {desIP} {desPort}')
