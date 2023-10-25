@@ -1,4 +1,3 @@
-import IPaddress
 
 
 class Packet:
@@ -29,6 +28,38 @@ class Packet:
         if self.src_ip == None:
             srcIP = "Any"
         else:
+            srcIP= str(self.src_ip)
+
+        if self.dest_ip == None:
+            desIP = "Any"
+        else:
+            desIP= str(self.dest_ip)
+
+        print(f'{srcPort} {srcIP} {desIP} {desPort}')
+        return
+
+    def to_string(self):
+        protocol = ""
+        srcPort = ""
+        desPort = ""
+        srcIP = ""
+        if self.protocol == None:
+            protocol = "Any"
+        else:
+            protocol = str(self.protocol)
+        if self.src_port == None or self.src_port == 0:
+            srcPort = "Any"
+        else:
+            srcPort = str(self.src_port)
+
+        if self.dest_port == None or self.dest_port == 0:
+            desPort = "Any"
+        else:
+            desPort = str(self.dest_port)
+
+        if self.src_ip == None:
+            srcIP = "Any"
+        else:
             srcIP=self.src_ip.to_string()
 
         if self.dest_ip == None:
@@ -36,5 +67,6 @@ class Packet:
         else:
             desIP= self.dest_ip.to_string()
 
-        print(f'{srcPort} {srcIP} {desIP} {desPort}')
-        return
+        space = " "
+        return protocol + space + srcPort + space + srcIP + space + desIP + space + desPort
+

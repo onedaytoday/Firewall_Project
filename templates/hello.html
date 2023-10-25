@@ -20,8 +20,9 @@
               };
         var code = document.getElementById('code').value
         var serial = document.getElementById('serial').value
+        var ip = document.getElementById('ip').value
         var TestPacket= {src: 1, des:2}
-        output = JSON.stringify({code:code, serial:serial, TestPacket: TestPacket})
+        output = JSON.stringify({code:code, serial:serial, IP: ip })
         xhr.send(output);
         xhr.onload = function(){
                 document.getElementById('input').innerHTML = xhr.response
@@ -36,6 +37,8 @@
 <input type="text" id="code" name="code"><br><br>
 <label for="code">Serial:</label>
 <input type="text" id="serial" name="serial"><br><br>
+<label for="ip">IP:</label>
+<input type="ip" id="ip" name="ip"><br><br>
 <button onclick="sendData()">Click me</button>
 
 

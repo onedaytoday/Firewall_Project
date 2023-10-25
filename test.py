@@ -1,13 +1,16 @@
 # TEAM IDEO Test Script
 # Omid Najibzadeh
+import ipaddress
+
 import meraki
 import auth
 import Layer3Firewall as Firewall
 import Packet
-import IPaddress
 import key
 import server
+
 version = "2.1"
+
 
 def print_header():
     print(f'TEAM IDEO Project Version: {version}')
@@ -19,8 +22,10 @@ def print_footer():
     print("----------------------")
     print("END OF PROGRAM\n")
 
+
 def test_firewall(firewall, packet):
     return firewall.filter(packet)
+
 
 def test_and_print_firewall(firewall, packet):
     print()
@@ -29,17 +34,15 @@ def test_and_print_firewall(firewall, packet):
     print()
 
 
-
 def test():
     print_header()
 
-    IPaddress_one = IPaddress.IPAddress(8,8,8,8)
-    IPaddress_two = IPaddress.IPAddress(10,10,15,1)
-    IPaddress_three = IPaddress.IPAddress(10,10,1,1)
-    IPaddress_four = IPaddress.IPAddress(10,0,0,0)
-    IPaddress_five = IPaddress.IPAddress(7,0,0,0)
+    IPaddress_one = IPaddress.IPAddress(8, 8, 8, 8)
+    IPaddress_two = IPaddress.IPAddress(10, 10, 15, 1)
+    IPaddress_three = IPaddress.IPAddress(10, 10, 1, 1)
+    IPaddress_four = IPaddress.IPAddress(10, 0, 0, 0)
+    IPaddress_five = IPaddress.IPAddress(7, 0, 0, 0)
     IPaddress_four.CIDR = 8
-
 
     FireWallRules = []
     FirewallRule1 = Firewall.Layer3Firewall.FirewallRule(Firewall.Layer3Firewall.Decision.Allow, None, IPaddress_one)
@@ -49,13 +52,11 @@ def test():
     FirewallRule3 = Firewall.Layer3Firewall.FirewallRule(Firewall.Layer3Firewall.Decision.Block, None, IPaddress_four)
     FireWallRules.append(FirewallRule3)
 
-
     print("Firewall Rules")
     print("\nPacket src_port src_ip des_ip des_port\n")
 
     MX_Firewall = Firewall.Layer3Firewall(FireWallRules)
     MX_Firewall.print()
-
 
     print("\nPacket Filtering and Decision\n")
     testPacket1 = Packet.Packet(None, IPaddress_one)
@@ -70,12 +71,19 @@ def test():
     testPacket4 = Packet.Packet(None, IPaddress_five)
     test_and_print_firewall(MX_Firewall, testPacket4)
 
-
     TestePackets = [testPacket1, testPacket2, testPacket3, testPacket4]
     print(MX_Firewall.filter_multiple(TestePackets))
 
     print_footer()
 
+
+def is_in_range(a, b):
+    if (
+            type(a) != type(ipaddress.IPv4Network) and type(b) != type(ipaddress.IPv4Address) or
+            type(a) != type(ipaddress.IPv6Network) and type(b) != type(ipaddress.IPv6Address)
+    ):
+        Exception('Wrong Type')
+    return a in b
 
 
 def test_IP_dot_to_IP_obj():
@@ -89,11 +97,13 @@ def test_with_dashboard():
     MXFirewall.print()
     TestPacket = Packet.Packet(srcport=0,
                                destport=0,
-                               source_ip=IPaddress.IPAddress.make_ip_from_dot_notation_ip_string('172.16.1.4'),
-                               destination_ip=IPaddress.IPAddress.make_ip_from_dot_notation_ip_string('172.16.2.1')
+                               source_ip=ipaddress.ip_address('172.16.1.4'),
+                               destination_ip=ipaddress.ip_network('172.16.2.1')
                                )
     TestPacket.print()
+    print(MXFirewall.get_firewall_rules())
     print(MXFirewall.filter(TestPacket))
+
 
 if __name__ == '__main__':
     test_with_dashboard()

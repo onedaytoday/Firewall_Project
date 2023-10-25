@@ -1,4 +1,15 @@
 from enum import Enum
+import ipaddress
+
+
+def is_in_range(a, b):
+
+    if ((isinstance(a, ipaddress.IPv4Network) and isinstance(b, ipaddress.IPv4Address))
+            or (isinstance(a, ipaddress.IPv6Network) or isinstance(b, ipaddress.IPv6Address))
+    ):
+        return b in a
+
+    return False
 
 
 class Layer3Firewall:
@@ -17,7 +28,11 @@ class Layer3Firewall:
         for rule in self.Rules:
             decision = rule.rule_decision(packet)
             if decision == Layer3Firewall.Decision.Allow or decision == Layer3Firewall.Decision.Block:
+                print("Rule that matched is")
+                rule.print()
+                print()
                 return decision
+
         return self.DEFAULT_DECISION
 
     def filter_multiple(self, packets):
@@ -28,17 +43,25 @@ class Layer3Firewall:
             results.append(self.filter(packet))
         return results
 
+    def get_firewall_rules(self):
+        output = []
+        for rule in self.Rules:
+            output.append(rule.get_rule_to_dic())
+        return output
+
     class Decision(Enum):
         NO_MATCH = 0
-        Allow = 'Allow'
-        Block = 'Block'
+        Allow = 'allow'
+        Block = 'deny'
 
         def print(self):
             print(self.value)
+
         def get_value(self):
             return self.value
 
     class FirewallRule:
+
         def __init__(self, decision, src_ip_range, dest_ip_range, description="", protocol=None, srcport=0, destport=0):
             self.name = ""
             self.description = description
@@ -49,13 +72,65 @@ class Layer3Firewall:
             self.dest_ip_range = dest_ip_range
             self.action = decision
 
+        def get_rule_to_dic(self):
+            srcPort = ""
+            desPort = ""
+            srcIP = ""
+            desIP = ""
+            proto = ""
+            if self.protocol is None:
+                proto = "Any"
+            if self.src_port is None or self.src_port == 0:
+                srcPort = "Any"
+            else:
+                srcPort = str(self.src_port)
+            if self.dest_port is None or self.dest_port == 0:
+                desPort = "Any"
+            else:
+                desPort = str(self.dest_port)
+
+            if self.src_ip_range is None:
+                srcIP = "Any"
+            else:
+                srcIP = str(self.src_ip_range)
+
+            if self.dest_ip_range is None:
+                desIP = "Any"
+            else:
+                desIP = str(self.dest_ip_range)
+
+            return {
+                'comment': self.description,
+                'policy': self.action.value,
+                'protocol': proto,
+                'srcPort': srcPort,
+                'srcCidr': srcIP,
+                'destPort': desPort,
+                'destCidr': desIP,
+                'syslogEnabled': False
+            }
+
         def matches_rule(self, packet):
             src_port_match = self.src_port is None or self.src_port == 0 or self.src_port == packet.src_port
             dest_port_match = self.dest_port is None or self.dest_port == 0 or self.dest_port == packet.dest_port
-            src_IP_match = self.src_ip_range is None or self.src_ip_range.ip_is_in_range(packet.src_ip)
-            des_IP_match = self.dest_ip_range is None or self.dest_ip_range.ip_is_in_range(packet.dest_ip)
 
-            return src_IP_match and des_IP_match and dest_port_match and src_port_match
+            src_IP_match = False
+            des_IP_match = False
+            if self.src_ip_range is None:
+                src_IP_match = True
+            else:
+                for ip_range in self.src_ip_range:
+                    src_IP_match = (is_in_range(ip_range, packet.src_ip)
+                                    or src_IP_match)
+            if self.dest_ip_range is None:
+                des_IP_match = True
+            else:
+                for ip_range in self.dest_ip_range:
+                    des_IP_match = (is_in_range(ip_range, packet.dest_ip)
+                                    or des_IP_match)
+            proto_match = self.protocol is None or self.protocol == packet.protocol
+
+            return src_IP_match and des_IP_match and dest_port_match and src_port_match and proto_match
 
         def rule_decision(self, packet):
             if self.matches_rule(packet):
@@ -83,11 +158,11 @@ class Layer3Firewall:
             if self.src_ip_range is None:
                 srcIP = "Any"
             else:
-                srcIP = self.src_ip_range.to_string()
+                srcIP = str(self.src_ip_range)
 
             if self.dest_ip_range is None:
                 desIP = "Any"
             else:
-                desIP = self.dest_ip_range.to_string()
+                desIP = str(self.dest_ip_range)
 
-            print(f'{self.description} {self.action} {srcPort} {srcIP} {desIP} {desPort}')
+            print(f'{self.description} {srcPort} {srcIP} {desIP} {desPort} {self.action}')
