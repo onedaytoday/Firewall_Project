@@ -1,12 +1,29 @@
-
-
+import ipaddress
+import Errors
 class Packet:
     def __init__(self, source_ip, destination_ip, protocol=None, srcport=0, destport=0):
         self.protocol = protocol
-        self.src_ip = source_ip
-        self.dest_ip = destination_ip
+        self.src_ip = None
+        self.set_src_IP(source_ip)
+        self.dest_ip = None
+        self.set_dest_IP(destination_ip)
+        self.check_IP_types()
         self.src_port = srcport
         self.dest_port = destport
+
+
+
+    def set_src_IP(self, src):
+        try:
+            self.src_ip = ipaddress.ip_address(src)
+        except:
+            raise Errors.InvalidSourceIP()
+
+    def set_dest_IP(self, dest):
+        try:
+            self.dest_ip = ipaddress.ip_address(dest)
+        except:
+            raise Errors.InvalidDestinationIP()
 
     def print(self):
         protocol = ""
@@ -69,4 +86,9 @@ class Packet:
 
         space = " "
         return protocol + space + srcPort + space + srcIP + space + desIP + space + desPort
+
+    def check_IP_types(self):
+        if type(self.src_ip) != type(self.dest_ip):
+            raise Errors.MissMatchedIPTypes()
+
 

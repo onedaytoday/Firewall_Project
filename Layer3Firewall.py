@@ -1,5 +1,6 @@
 from enum import Enum
 import ipaddress
+import Errors
 
 
 def is_in_range(a, b):
@@ -28,6 +29,7 @@ class Layer3Firewall:
         for rule in self.Rules:
             decision = rule.rule_decision(packet)
             if decision == Layer3Firewall.Decision.Allow or decision == Layer3Firewall.Decision.Block:
+                print()
                 print("Rule that matched is")
                 rule.print()
                 print()

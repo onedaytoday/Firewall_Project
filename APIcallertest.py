@@ -39,6 +39,8 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
         dashboard = meraki.DashboardAPI(self.APIkey)
         time.sleep(.5)
         self.L3FWresponse = dashboard.appliance.getNetworkApplianceFirewallL3FirewallRules(self.networkID)
+        self.L3FWresponse = {'rules': [{'comment': 'VLAN tag testing', 'policy': 'deny', 'protocol': 'any', 'srcPort': 'Any',
+                                        'srcCidr': 'VLAN(2).*', 'destPort': 'Any', 'destCidr': 'VLAN(5).*', 'syslogEnabled': False}]}
         time.sleep(.5)
         obj.resolveVLANIDtoIP()
         time.sleep(.5)

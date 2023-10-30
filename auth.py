@@ -1,5 +1,5 @@
 import time
-
+import Layer3Firewall
 import ipaddress
 import key
 
@@ -7,36 +7,47 @@ API_KEY = key.API_KEY
 
 import json
 import meraki
-import Layer3Firewall
-
+import Errors
 
 class MerakiDash:
-    def __init__(self, key, serial):
+    def __init__(self, key):
         self.vlan_subnet_mapping = {}
-        self.session = meraki.DashboardAPI(api_key=key)
-        self.MXSerial = serial
-        self.networkId = self.session.devices.getDevice(serial).get('networkId')
-        self.resolveVLANIDtoIP()
         self.jsonRules = None
+        try:
+            self.session = meraki.DashboardAPI(api_key=key)
+        except:
+            raise Errors.WrongSerial()
 
+    def fetch_network(self, serial):
+        device = None
+        self.MXSerial = serial
+        try:
+            device = self.session.devices.getDevice(serial)
+        except:
+            raise Errors.WrongSerial()
+        try:
+            self.networkId = device.get('networkId')
+        except:
+            raise Errors.NoNetworkFound()
+        self.resolveVLANIDtoIP()
 
     @staticmethod
     def print_json_nicely(a):
         text = json.dumps(a, sort_keys=True, indent=4)
-        #xprint("Device info: \n", text)
+        # xprint("Device info: \n", text)
+
     def get_firewall(self):
         Layer3Rules = self.session.appliance.getNetworkApplianceFirewallL3FirewallRules(self.networkId)
-        MerakiDash.print_json_nicely(Layer3Rules)
+        # MerakiDash.print_json_nicely(Layer3Rules)
         FireWallRules = []
         self.jsonRules = Layer3Rules.get('rules')
         for rule in Layer3Rules.get('rules'):
             createdRule = self.__parse_firewall_rule(rule)
             FireWallRules.append(createdRule)
-            createdRule.print()
 
         return Layer3Firewall.Layer3Firewall(FireWallRules)
-    
-    def resolveVLANIDtoIP(self):# Method that handles turning a VLAN ID into CIDR
+
+    def resolveVLANIDtoIP(self):  # Method that handles turning a VLAN ID into CIDR
         self.VLANinfo = self.session.appliance.getNetworkApplianceVlans(self.networkId)
         time.sleep(.5)
 
@@ -44,9 +55,9 @@ class MerakiDash:
             vlan_id = vlan['id']
             vlan_subnet = vlan['subnet']
             self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"] = [ipaddress.ip_network(vlan_subnet)]
-            if(vlan['ipv6'] is not None):
+            if (vlan['ipv6'] is not None):
                 ipv6 = vlan.get('ipv6').get('prefixAssignments')[0].get('staticPrefix')
-                if(ipv6 is not None):
+                if (ipv6 is not None):
                     self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"].append(ipaddress.ip_network(ipv6))
 
     def get_vlan_id(self, ip_cidr):
@@ -70,19 +81,19 @@ class MerakiDash:
         elif rule.get('policy') == 'deny':
             policy = Layer3Firewall.Layer3Firewall.Decision.Block
 
-        #srcPort
+        # srcPort
         if rule.get('srcPort') == 'Any':
             src_port = 0
         else:
             src_port = int(rule.get('srcPort'))
 
-        #destPort
+        # destPort
         if rule.get('destPort') == 'Any':
             dest_port = 0
         else:
             dest_port = int(rule.get('destPort'))
 
-        #srcIP
+        # srcIP
         if rule.get('srcCidr') == 'Any':
             src_ip_range = None
         else:
@@ -93,7 +104,7 @@ class MerakiDash:
                 else:
                     src_ip_range.append(ipaddress.ip_network(thisRule))
 
-        #destIP
+        # destIP
         if rule.get('destCidr') == 'Any':
             dest_ip_range = None
         else:
@@ -107,14 +118,13 @@ class MerakiDash:
         output = Layer3Firewall.Layer3Firewall.FirewallRule(
             description=rule.get('comment'),
             decision=policy,
-            src_ip_range= src_ip_range,
+            src_ip_range=src_ip_range,
             dest_ip_range=dest_ip_range,
             srcport=src_port,
             destport=dest_port
         )
 
         return output
+
     def get_vlan_IP(self, s):
-
         return
-

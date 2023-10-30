@@ -17,8 +17,9 @@ if __name__ == '__main__':
     print(L3Firewall)
     VLANs = session.appliance.getNetworkApplianceVlans(netID)
 
-    for V in VLANs:
-        print(V.get('ipv6').get('prefixAssignments')[0].get('staticPrefix'))
+    #for V in VLANs:
+        #print(V.get('ipv6').get('prefixAssignments')[0].get('staticPrefix'))
+
     print("VLANS")
     text = json.dumps(VLANs, sort_keys=True, indent=4)
     #print(text)
