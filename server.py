@@ -5,9 +5,13 @@ import Errors
 import auth
 import Packet
 
-keyVariableName = 'code'
-serialVariableName = 'serial'
-
+keyVariableName = 'Api'
+serialVariableName = 'Snum'
+srcIPVariableName = 'srcIP'
+destIPVariableName = 'destIP'
+srcPortVariableName = 'srcPort'
+destPortVariableName = 'destPort'
+protocolVariableName = 'proto'
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -74,7 +78,6 @@ def test_code_and_serial():
     return response
 
 
-
 @app.route('/check', methods=['POST'])
 def check_code_and_serial_and_firewall():
     req = request.get_json()
@@ -83,27 +86,27 @@ def check_code_and_serial_and_firewall():
         MX = auth.MerakiDash(req.get(keyVariableName))
         MX.fetch_network(req.get(serialVariableName))
         MXFirewall = MX.get_firewall()
-        MXFirewall.print()
-        TestPacket = Packet.Packet(srcport=0,
-                                   destport=0,
-                                   source_ip=ipaddress.ip_address('172.16.1.4'),
-                                   destination_ip=ipaddress.ip_address('172.16.2.1')
+        #MXFirewall.print()
+        TestPacket = Packet.Packet(srcport=req.get(srcPortVariableName),
+                                   destport=req.get(destPortVariableName),
+                                   source_ip=req.get(srcIPVariableName),
+                                   destination_ip=req.get(destIPVariableName),
+                                   protocol=req.get(protocolVariableName)
                                    )
         TestPacket.print()
-        outcome = MXFirewall.filter(TestPacket)
-        data = TestPacket.to_string() + " is " + outcome.get_value()
+        outcome, matched_rule = MXFirewall.find_matching_rule(TestPacket)
+        print(outcome.get_value())
+        output = json.dumps([outcome.get_value(), matched_rule.get_rule_json()])
+        print(output)
         response = Flask.response_class(
-            response=data,
+            response = output,
             status="202"
         )
         print(outcome)
-    except Exception as e:
-        response = Flask.response_class(
-            error="Wrong APIKey",
-            status="700"
-        )
         return response
-    return response
+    except Exception as e:
+        return respond_to_exception(e)
+
 
 @app.route(rule='/check-key')
 def check_key():
@@ -123,7 +126,7 @@ def check_key():
 def check_key_and_serial():
     try:
         req = request.get_json()
-        dash =auth.MerakiDash(req.get(keyVariableName))
+        dash = auth.MerakiDash(req.get(keyVariableName))
         dash.fetch_network(req.get(serialVariableName))
         response = Flask.response_class(
             response=True,
@@ -131,7 +134,7 @@ def check_key_and_serial():
         )
         return response
     except Exception as e:
-        return respond_to_exception(e)
+        respond_to_exception(e)
 
 
 def respond_to_exception(e):
@@ -144,7 +147,6 @@ def respond_to_exception(e):
     elif isinstance(e, Errors.WrongSerial):
         Error = "Wrong Serial"
         Status = 702
-        return Status
     elif isinstance(e, Errors.VLANProblems):
         Error = "Problem Getting VLANs"
         Status = 703
@@ -163,8 +165,8 @@ def respond_to_exception(e):
         Status = 707
 
     response = Flask.response_class(
-        error=Error,
-        status=Status
+        response=Error,
+        status=str(Status)
     )
     return response
 

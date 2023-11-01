@@ -16,7 +16,7 @@ class MerakiDash:
         try:
             self.session = meraki.DashboardAPI(api_key=key)
         except:
-            raise Errors.WrongSerial()
+            raise Errors.WrongDashKey()
 
     def fetch_network(self, serial):
         device = None
@@ -125,6 +125,3 @@ class MerakiDash:
         )
 
         return output
-
-    def get_vlan_IP(self, s):
-        return

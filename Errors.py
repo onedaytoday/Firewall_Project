@@ -17,13 +17,14 @@ class NoNetworkFound(DashExceptions):
 class VLANProblems(DashExceptions):
     pass
 
-class InvalidSourceIP(Exception):
+
+class InvalidSourceIP(DashExceptions):
     pass
 
 
-class InvalidDestinationIP(Exception):
+class InvalidDestinationIP(DashExceptions):
     pass
 
 
-class MissMatchedIPTypes(Exception):
+class MissMatchedIPTypes(DashExceptions):
     pass

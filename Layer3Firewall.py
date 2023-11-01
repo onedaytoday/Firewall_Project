@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 import ipaddress
 import Errors
@@ -25,6 +26,14 @@ class Layer3Firewall:
         for rule in self.Rules:
             rule.print()
 
+
+    def find_matching_rule(self, packet):
+        for rule in self.Rules:
+            decision = rule.rule_decision(packet)
+            if decision == Layer3Firewall.Decision.Allow or decision == Layer3Firewall.Decision.Block:
+                return decision, rule
+
+        return self.DEFAULT_DECISION
     def filter(self, packet):
         for rule in self.Rules:
             decision = rule.rule_decision(packet)
@@ -52,7 +61,7 @@ class Layer3Firewall:
         return output
 
     class Decision(Enum):
-        NO_MATCH = 0
+        NO_MATCH = "no match"
         Allow = 'allow'
         Block = 'deny'
 
@@ -74,6 +83,9 @@ class Layer3Firewall:
             self.dest_ip_range = dest_ip_range
             self.action = decision
 
+
+        def get_rule_json(self):
+            return json.dumps(self.get_rule_to_dic())
         def get_rule_to_dic(self):
             srcPort = ""
             desPort = ""

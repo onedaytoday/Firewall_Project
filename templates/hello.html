@@ -6,8 +6,13 @@
 <body>
 <script>
         function sendData(){
-        document.getElementById('input').innerHTML = 'yes'
-        var url = "http://127.0.0.1:5000/test"
+        var Snum = document.getElementById("Snum").value;
+        var Api = document.getElementById("Api").value;
+        var srcIP = document.getElementById("srcIP").value;
+        var destIP = document.getElementById("destIP").value;
+
+        document.getElementById('input').innerHTML = 'Loading'
+        var url = "http://127.0.0.1:5000/check"
         const xhr = new XMLHttpRequest();
         xhr.open("POST", url)
         xhr.setRequestHeader("Content-Type", "application/json")
@@ -20,9 +25,12 @@
               };
         var code = document.getElementById('code').value
         var serial = document.getElementById('serial').value
-        var ip = document.getElementById('ip').value
+        //var ip = document.getElementById('ip').value
         var TestPacket= {src: 1, des:2}
-        output = JSON.stringify({code:code, serial:serial, IP: ip })
+        output = JSON.stringify({Snum: Snum,
+                Api: Api,
+                srcIP : srcIP,
+                destIP: destIP})
         xhr.send(output);
         xhr.onload = function(){
                 document.getElementById('input').innerHTML = xhr.response
@@ -32,10 +40,13 @@
         function send_Serialapi(){
                 var Snum = document.getElementById("Snum").value;
                 var Api = document.getElementById("Api").value;
-
+                var srcIP = document.getElementById("srcIP").value;
+                var destIP = document.getElementById("destIP").value;
                 var data = {
                         Snum: Snum,
-                        Api: Api
+                        Api: Api,
+                        srcIP : srcIP,
+                        destIP: destIP
                 };
 
                 var jsonData = JSON.stringify(data);
@@ -62,8 +73,10 @@
 <input type="text" id="code" name="code"><br><br>
 <label for="code">Serial:</label>
 <input type="text" id="serial" name="serial"><br><br>
-<label for="ip">IP:</label>
-<input type="ip" id="ip" name="ip"><br><br>
+<label for="srcIP">Source IP:</label>
+<input type="srcIP" id="srcIP" name="ip"><br><br>
+<label for="destIP">Destination IP:</label>
+<input type="destIP" id="destIP" name="ip"><br><br>
 <button onclick="sendData()">Click me</button>
 
 
