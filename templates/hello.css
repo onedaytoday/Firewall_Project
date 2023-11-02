@@ -1,0 +1,103 @@
+body{
+    margin:0;
+    width: 100%;
+    background-color: rgb(232, 247, 237);
+    align-items: center;
+    justify-content: center;
+    
+}
+.navbar{
+    width: 100%;
+    background-color: white;
+    overflow: hidden;
+    height:50px;
+
+}
+
+
+.left_column{
+    margin-top: 0px;
+    height: 50px;
+    width:100%;
+    overflow: hidden;
+    background-color: rgb(219, 219, 219);
+    
+}
+.sideBar{ 
+    float: left;
+    overflow: hidden;
+    font-family: Sharp Sans;
+    height: 40px;
+    background-color: rgb(219, 219, 219);
+    margin-top: 0px;
+    text-align: center;
+    outline-color: black;
+    outline-width: 2px;
+    padding: 5px;
+    padding-top: 15px;
+   
+   
+}
+.sideBar:hover{
+    background-color: rgba(30, 212, 76, 0.566);
+    transition-duration: .3s;
+}
+p{
+    font-family: Sharp Sans;
+    font-size: 20px;
+   
+}
+.content{
+    display: none;
+}
+.Core{
+   margin-left:30%;
+   width:400px;
+   background-color: rgb(209, 209, 209);
+   border-radius: 25px;
+    text-align: center;
+    box-shadow: 2px 2px 4px #000000;
+}
+.box{  
+    display: none;
+}
+.inputBox{
+    margin: auto;
+    height:30px;
+    
+}
+.API{
+    margin: auto;
+    height:30px;
+}
+
+.Snum{
+    margin: auto;
+    height:30px;
+}
+
+button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: auto;
+    margin:auto;
+    background-color: aliceblue;
+    border-radius: 25px;
+    height:30px;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+.buttonBox{
+   
+    border-radius: 25px;
+    width: 300px;
+    margin:auto;
+    height: 60px;
+}
+
+@media (max-width: 768px){
+   
+    .left_column{
+        margin-left:0px;
+    }
+}
