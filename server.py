@@ -86,7 +86,7 @@ def check_code_and_serial_and_firewall():
         MX = auth.MerakiDash(req.get(keyVariableName))
         MX.fetch_network(req.get(serialVariableName))
         MXFirewall = MX.get_firewall()
-        #MXFirewall.print()
+        MXFirewall.print()
         TestPacket = Packet.Packet(srcport=req.get(srcPortVariableName),
                                    destport=req.get(destPortVariableName),
                                    source_ip=req.get(srcIPVariableName),

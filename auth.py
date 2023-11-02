@@ -1,9 +1,6 @@
 import time
 import Layer3Firewall
 import ipaddress
-import key
-
-API_KEY = key.API_KEY
 
 import json
 import meraki
@@ -14,7 +11,7 @@ class MerakiDash:
         self.vlan_subnet_mapping = {}
         self.jsonRules = None
         try:
-            self.session = meraki.DashboardAPI(api_key=key)
+            self.session = meraki.DashboardAPI(api_key=key, output_log=False)
         except:
             raise Errors.WrongDashKey()
 
