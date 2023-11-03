@@ -6,30 +6,39 @@
         
         <body>
         <script>
-                function sendData(){
-                document.getElementById('input').innerHTML = 'yes'
-                var url = "http://127.0.0.1:5000/test"
-                // add domain name
-                const xhr = new XMLHttpRequest();
-                xhr.open("POST", url)
-                xhr.setRequestHeader("Content-Type", "application/json")
-                xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
-                xhr.onreadystatechange = () => {
-                      // Call a function when the state changes.
-                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                                // Request finished. Do processing here.
-                        }
-                      };
-                var code = document.getElementById('code').value
-                var serial = document.getElementById('serial').value
-                var TestPacket= {src: 1, des:2}
-                output = JSON.stringify({code:code, serial:serial, TestPacket: TestPacket})
-                xhr.send(output);
-                xhr.onload = function(){
-                        document.getElementById('input').innerHTML = xhr.response
-                        console.log(xhr.response)
-                        }
+        function sendData(){
+        var Snum = document.getElementById("Snum").value;
+        var Api = document.getElementById("Api").value;
+        var srcIP = document.getElementById("SourceIp").value;
+        var destIP = document.getElementById("DesIp").value;
+
+        document.getElementById('input').innerHTML = 'Loading'
+        var url = "http://127.0.0.1:5000/check"
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
+        xhr.onreadystatechange = () => {
+              // Call a function when the state changes.
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        // Request finished. Do processing here.
                 }
+              };
+        var code = document.getElementById('code').value
+        var serial = document.getElementById('serial').value
+        //var ip = document.getElementById('ip').value
+        var TestPacket= {src: 1, des:2}
+        output = JSON.stringify({Snum: Snum,
+                Api: Api,
+                srcIP : srcIP,
+                destIP: destIP})
+        xhr.send(output);
+        xhr.onload = function(){
+                document.getElementById('input').innerHTML = xhr.response
+                console.log(xhr.response)
+                }
+        }
+
                function showContent(boxNumber){
                 var contentElements = document.querySelectorAll(".content");
                 contentElements.forEach(function(element){
@@ -87,7 +96,7 @@
                         <input type="text" class="inputBox" name="Protocol" id="Protocol">
         
                 </div>
-                <div class="buttonBox"><button>Check Firewalls</button></div>
+                <div class="buttonBox"><button onclick="sendData()">Check Firewalls</button></div>
         
                 
         </div>

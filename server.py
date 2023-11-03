@@ -23,6 +23,18 @@ def home_page():
     return render_template("hello.html")
 
 
+@app.route(rule='/hello.css', methods=['GET'])
+def home_page_css():
+    print(request)
+    return render_template("hello.css")
+
+
+@app.route(rule='/logo3.jpg', methods=['GET'])
+def home_page_logo():
+    print(request)
+    return send_file("templates/logo3.jpg", mimetype='image/jpg')
+
+
 @app.route('/', methods=['POST'])
 def default_handler():
     print("Default")
