@@ -1,7 +1,7 @@
 body{
     margin:0;
     width: 100%;
-    background-color: rgb(232, 247, 237);
+    background-color: rgb(255, 255, 255);
     align-items: center;
     justify-content: center;
     
@@ -10,10 +10,13 @@ body{
     width: 100%;
     background-color: white;
     overflow: hidden;
-    height:50px;
+    height:60px;
 
 }
 
+img{
+    margin-bottom: 10px;
+}
 
 .left_column{
     margin-top: 0px;
@@ -22,6 +25,14 @@ body{
     overflow: hidden;
     background-color: rgb(219, 219, 219);
     
+}
+
+
+.bar{
+    height:1px;
+    width:100%;
+    background-color: rgb(219, 219, 219) ;
+    margin:0;
 }
 .sideBar{ 
     float: left;
@@ -35,14 +46,21 @@ body{
     outline-width: 2px;
     padding: 5px;
     padding-top: 15px;
-   
+    cursor: pointer;
+    
    
 }
 .sideBar:hover{
-    background-color: rgba(30, 212, 76, 0.566);
+    background-color: white;
     transition-duration: .3s;
+    
+}
+.sidebar:focus{
+   background-color: white; 
+
 }
 p{
+    padding-top: 10px;
     font-family: Sharp Sans;
     font-size: 20px;
    
@@ -50,13 +68,19 @@ p{
 .content{
     display: none;
 }
+h{
+    font-family: Sharp Sans;
+    margin-left: 12px;
+
+}
 .Core{
-   margin-left:30%;
+   margin-left:auto;
+   margin-right:auto;
    width:400px;
    background-color: rgb(209, 209, 209);
-   border-radius: 25px;
-    text-align: center;
-    box-shadow: 2px 2px 4px #000000;
+  text-align: center;
+    box-shadow: 5px 10px;
+    margin-bottom: 20px;
 }
 .box{  
     display: none;
@@ -67,6 +91,7 @@ p{
     
 }
 .API{
+   
     margin: auto;
     height:30px;
 }
@@ -94,6 +119,24 @@ button{
     margin:auto;
     height: 60px;
 }
+
+table {
+    margin-top: 20px;
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: white;
+    border-radius: 25px;
+  }
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+  
 
 @media (max-width: 768px){
    

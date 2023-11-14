@@ -6,38 +6,33 @@
         
         <body>
         <script>
-        function sendData(){
-        var Snum = document.getElementById("Snum").value;
-        var Api = document.getElementById("Api").value;
-        var srcIP = document.getElementById("SourceIp").value;
-        var destIP = document.getElementById("DesIp").value;
 
-        document.getElementById('input').innerHTML = 'Loading'
-        var url = "http://127.0.0.1:5000/check"
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", url)
-        xhr.setRequestHeader("Content-Type", "application/json")
-        xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
-        xhr.onreadystatechange = () => {
-              // Call a function when the state changes.
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        // Request finished. Do processing here.
+                function sendData(){
+                        
+                document.getElementById('input').innerHTML = 'yes'
+                var url = "http://127.0.0.1:5000/test"
+                // add domain name
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", url)
+                xhr.setRequestHeader("Content-Type", "application/json")
+                xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
+                xhr.onreadystatechange = () => {
+                      // Call a function when the state changes.
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                // Request finished. Do processing here.
+                        }
+                      };
+                var code = document.getElementById('code').value
+                var serial = document.getElementById('serial').value
+                var TestPacket= {src: 1, des:2}
+                output = JSON.stringify({code:code, serial:serial, TestPacket: TestPacket})
+                xhr.send(output);
+                xhr.onload = function(){
+                        document.getElementById('input').innerHTML = xhr.response
+                        console.log(xhr.response)
+                        }
                 }
-              };
-        var code = document.getElementById('code').value
-        var serial = document.getElementById('serial').value
-        //var ip = document.getElementById('ip').value
-        var TestPacket= {src: 1, des:2}
-        output = JSON.stringify({Snum: Snum,
-                Api: Api,
-                srcIP : srcIP,
-                destIP: destIP})
-        xhr.send(output);
-        xhr.onload = function(){
-                document.getElementById('input').innerHTML = xhr.response
-                console.log(xhr.response)
-                }
-        }
+
 
                function showContent(boxNumber){
                 var contentElements = document.querySelectorAll(".content");
@@ -47,42 +42,97 @@
                 var selectContent = document.getElementById("content" + boxNumber);
                 selectContent.style.display ="block";
                }
+
+
                function send_Serialapi(){
+                document.getElementById('Deviceinfo').innerHTML = 'List for device Info'
                 var Api = document.getElementById("Api").value;
                 var Snum = document.getElementById("Snum").value;
                 const xhr = new XMLHttpRequest();
-                
+                var url = "http://127.0.0.1:5000'/check"
+                xhr.open("POST", url);//opens url
+                xhr.setRequestHeader("Content-type", "application/json");
+
+                const body = JSON.stringify({Api:Api, Snum:Snum});
+                xhr.onreadystatechange = () =>{
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200){//if server is ready will do processing
+                                document.getElementById('info').innerHTML = 'Please go to Device Info'
+                        }
+                };
+
+                xhr.onload = () => { //listener event 
+                        const data = JSON.parse(xhr.response);//parse data out of string
+                        console.log(xhr.response);//gets response from server
+                };
+                xhr.send(body); //sends data to server 
                }
-        
-        
+
+               function send_Firewall_Info(){
+                var Snum = document.getElementById("Snum").value;
+                var Api = document.getElementById("Api").value;
+                var srcIP = document.getElementById("SourceIp").value;
+                var destIP = document.getElementById("DesIp").value;
+                var srcPort = document.getElementById("SrcPort").value;
+                var desPort= document.getElementById("DesPort").value;
+                var Protocol= document.getElementById("Protocol").value;
+
+                var url = "http://127.0.0.1:5000'/check"
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", url)
+                xhr.setRequestHeader("Content-Type", "application/json")
+                xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
+
+                output = JSON.stringify({Snum: Snum,
+                Api: Api,
+                srcIP : srcIP,
+                destIP: destIP,
+                srcPort:srcPort,
+                desPort:desPort,
+                Protocol:Protocol})
+
+                xhr.send(output);
+                xhr.onload = function(){
+                        document.getElementById('Display_Firewall_Info').innerHTML = xhr.response
+                console.log(xhr.response)
+                }
+               }
+
+
         </script>
         
-        <div class="navbar"><img class="logo" src="logo3.jpg" width="200px" ></div>
+        <div class="navbar"><img src="logo3.jpg" width="200px" ></div>
         
         <div class="bar"></div>
-        
+       
         <div class="left_column">
-                <div class="sideBar" onclick="showContent(1)">Info</div>
-                <div class="sideBar" onclick="showContent(2)">Device</div>
-                <div class="sideBar" onclick="showContent(3)">Firewall Info</div>
-                <div class="sideBar" onclick="showContent(4)">Firewall Check</div>
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(1)">Info</div>
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(2)">Device</div>
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(3)">Firewall Info</div>
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(4)">Firewall Check</div>
         </div>
-        
+
+        <div class="content" id="content1">        
         <div class="Core">
-        <div class="content" id="content1"><p>Enter your API Key:</p>
-        
-        <input type="text" class="API" name="API" id="Api" placeholder="API Key"><br><br>
-        
+        <p>Enter your API Key:</p>
+        <input type="text" class="API" name="API" id="Api" placeholder="API Key.."><br><br>
         <p>Enter your serial number:</p>
-        <input type="text"  class="Snum" name="Snum" id="Snum" placeholder="Serial number"><br><br>
+        <input type="text"  class="Snum" name="Snum" id="Snum" placeholder="Serial number.."><br><br>
+        <div class="buttonBox"><button onclick="send_Serialapi()">Go To Device</button></div>
+        <div id="info"></div>
+</div>
         
-        <div class="buttonBox"><button onclick="send_Serialapi()">Go To Device</button></div></div></div>
-        
+</div>
+
         <div class="content" id="content2">
-                <div class="Core"><p>Display Device Info:</p></div>
+                <div class="Core"><p>Display Device Info:</p>
+                <div id="Deviceinfo"></div>
+                </div>
         </div>
-        <div class="Core">
+
+
+        
         <div class="content" id="content3">
+                <div class="Core">
                 <div class="row1">
                         <p>Please Enter Source IP:</p>
                         <input type="'text" class="inputBox" name=" SourceIp" id="SourceIp">
@@ -94,20 +144,25 @@
                         <input type="text" class="inputBox" name="DesPort" id="DesPort">
                         <p>Enter Protocol:</p>
                         <input type="text" class="inputBox" name="Protocol" id="Protocol">
-        
                 </div>
-                <div class="buttonBox"><button onclick="sendData()">Check Firewalls</button></div>
-        
-                
+                <div class="buttonBox"><button>Check Firewalls</button></div>      
         </div>
         </div>
         
         <div class="content" id="content4">
                <table>
                 <tr>
-                        <th>
-        
-                        </th>
+                        <th>Desscription</th>
+                        <th>Protocol</th>
+                        <th>Src Port</th>
+                        <th>Des Port</th>
+                        <th>Src IP Range</th>
+                        <th>Des IP Range</th>
+                        <th>Policy</th>
+                </tr>
+                <tr>
+                        document.getElementById('input').innerHTML = xhr.response
+                        console.log(xhr.response)  
                 </tr>
                </table>
                 <table id="input">NO</p>
