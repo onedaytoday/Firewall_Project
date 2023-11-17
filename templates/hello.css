@@ -18,7 +18,7 @@ img{
     margin-bottom: 10px;
 }
 
-.left_column{
+.top_column{
     margin-top: 0px;
     height: 50px;
     width:100%;
@@ -26,8 +26,19 @@ img{
     background-color: rgb(219, 219, 219);
     
 }
-
-
+.left{
+    background-color: rgb(60, 173, 75);
+    float:left;
+    width: 33%;
+    height:100%;
+    min-width: 220px;
+}
+.right{
+    width:67%;
+    height:100%;
+    float:left;
+    background-color: rgb(255, 255, 255);
+}
 .bar{
     height:1px;
     width:100%;
@@ -60,9 +71,11 @@ img{
 
 }
 p{
-    padding-top: 10px;
+    padding-top: 20px;
     font-family: Sharp Sans;
     font-size: 20px;
+    color: white;
+    padding-left: 20px;
    
 }
 .content{
@@ -73,15 +86,7 @@ h{
     margin-left: 12px;
 
 }
-.Core{
-   margin-left:auto;
-   margin-right:auto;
-   width:400px;
-   background-color: rgb(209, 209, 209);
-  text-align: center;
-    box-shadow: 5px 10px;
-    margin-bottom: 20px;
-}
+
 .box{  
     display: none;
 }
@@ -92,12 +97,12 @@ h{
 }
 .API{
    
-    margin: auto;
+    margin: 30px;
     height:30px;
 }
 
 .Snum{
-    margin: auto;
+    margin: 30px;
     height:30px;
 }
 
@@ -106,14 +111,13 @@ button{
     align-items: center;
     justify-content: center;
     font-size: auto;
-    margin:auto;
+    margin: auto;
     background-color: aliceblue;
     border-radius: 25px;
     height:30px;
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }
 .buttonBox{
-   
     border-radius: 25px;
     width: 300px;
     margin:auto;
