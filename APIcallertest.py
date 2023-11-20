@@ -8,7 +8,8 @@ import ipaddress
 
 class L3FWmatching:  # Class with API calls and L3 matching methods
     def __init__(self):
-        self.APIkey = input("Please define an API key for your org: ")
+        self.APIkey = "4b659bfed83b89db39b7e34ba74edb4491dd1f74"
+        # self.APIkey = input("Please define an API key for your org: ")
         self.L3FWresponse = None
         self.networkID = None
         self.vlan_subnet_mapping = {}
@@ -28,7 +29,7 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
         self.VLANinfo = dashboard.appliance.getNetworkApplianceVlans(self.networkID)
         time.sleep(.5)
         text = json.dumps(self.VLANinfo, sort_keys=True, indent=4)
-        print("VLAN info: \n", text)
+        #print("VLAN info: \n", text)
 
         for vlan in self.VLANinfo:
             vlan_id = vlan['id']
@@ -36,7 +37,8 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
             self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"] = vlan_subnet
 
     def getL3firewallrules(self):  # Method that gets L3 firewall rules and prints them
-        self.networkID = input("Please enter network ID to fetch L3 rules: ")
+        self.networkID = "L_3695766444210919362"
+        # self.networkID = input("Please enter network ID to fetch L3 rules: ")
         dashboard = meraki.DashboardAPI(self.APIkey)
         time.sleep(.5)
         self.L3FWresponse = dashboard.appliance.getNetworkApplianceFirewallL3FirewallRules(self.networkID)
@@ -46,7 +48,8 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
         text = json.dumps(self.L3FWresponse, sort_keys=True, indent=4)
         print("L3 FW rules: \n", text)
 
-    def matchFirewallPolicy(self, source_ip, dest_ip):  # Method that handles policy matching and prints out the results
+    def matchFirewallPolicy(self, source_ip, dest_ip, source_port, dest_port, protocol):
+        # Method that handles policy matching and prints out the results
         if self.L3FWresponse is None:
             print("L3 firewall rules not fetched. Please call getL3firewallrules first.")
             return
@@ -64,9 +67,11 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
                 matching_rule = rule
                 break
             if (
-                    (rule['srcCidr'] == "Any" or self.ip_in_rule(source_ip,
-                                                                 self.resolve_vlan_cidr(rule['srcCidr']))) and
-                    (rule['destCidr'] == "Any" or self.ip_in_rule(dest_ip, self.resolve_vlan_cidr(rule['destCidr'])))
+                    (rule['srcCidr'] == "Any" or self.ip_in_rule(source_ip, self.resolve_vlan_cidr(rule['srcCidr']))) and
+                    (rule['destCidr'] == "Any" or self.ip_in_rule(dest_ip, self.resolve_vlan_cidr(rule['destCidr']))) and
+                    (rule['srcPort'] == "Any" or int(rule['srcPort']) == source_port) and
+                    (rule['destPort'] == "Any" or int(rule['destPort']) == dest_port) and
+                    (rule['protocol'] == "any" or rule['protocol'].lower() == protocol.lower())
             ):
                 matching_rule = rule
                 break
@@ -126,4 +131,15 @@ if __name__ == '__main__':
     if obj.choice == 2:
         source_ip = input("Enter the source IP: ")
         dest_ip = input("Enter the destination IP: ")
-        obj.matchFirewallPolicy(source_ip, dest_ip)
+
+        # Handle 'Any' or 'any' for source port
+        source_port_input = input("Enter the source port (0-65535 or Any): ")
+        source_port = None if source_port_input.lower() == 'any' else int(source_port_input)
+
+        # Handle 'Any' or 'any' for destination port
+        dest_port_input = input("Enter the destination port (0-65535 or Any): ")
+        dest_port = None if dest_port_input.lower() == 'any' else int(dest_port_input)
+
+        protocol = input("Enter the protocol (TCP, UDP, ICMP, ICMP6, ANY): ")
+        obj.matchFirewallPolicy(source_ip, dest_ip, source_port, dest_port, protocol)
+
