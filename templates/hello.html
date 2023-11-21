@@ -13,17 +13,7 @@
         var destIP = document.getElementById("DesIp").value;
 
         document.getElementById('input').innerHTML = 'Loading'
-        var url = "http://127.0.0.1:5000/check"
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", url)
-        xhr.setRequestHeader("Content-Type", "application/json")
-        xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
-        xhr.onreadystatechange = () => {
-              // Call a function when the state changes.
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                        // Request finished. Do processing here.
-                }
-              };
+
         var code = document.getElementById('code').value
         var serial = document.getElementById('serial').value
         //var ip = document.getElementById('ip').value
@@ -32,12 +22,36 @@
                 Api: Api,
                 srcIP : srcIP,
                 destIP: destIP})
+
+
+
+        var domain = "http://127.0.0.1:5000"
+        var route = "/check"
+        var url = domain + route
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url)
+        xhr.setRequestHeader("Content-Type", "application/json")
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
+
+        xhr.onreadystatechange = () => {
+              // Call a function when the state changes.
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        // Request finished. Do processing here.
+                }
+              };
+
         xhr.send(output);
         xhr.onload = function(){
+                // Do stuff with response
+                // in example below put the resposne in the html element input and log it on console
                 document.getElementById('input').innerHTML = xhr.response
                 console.log(xhr.response)
                 }
         }
+
+
+
+
 
                function showContent(boxNumber){
                 var contentElements = document.querySelectorAll(".content");

@@ -1,4 +1,9 @@
 from server import app
 
-if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=80)
+PublicIP = '18.188.148.206'
+AllIP = '0.0.0.0'
+HTTPS = 443
+HTTP = 80
+context = ('www_ideoproject_net.crt', 'PRIVATEKEY.key')  # crt , key
+
+

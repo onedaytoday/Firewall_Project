@@ -51,7 +51,7 @@ class Layer3Firewall:
             Exception()
         results = []
         for packet in packets:
-            results.append(self.filter(packet))
+            results.append(self.filter(packet).value)
         return results
 
     def get_firewall_rules(self):
