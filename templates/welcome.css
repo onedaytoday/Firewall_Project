@@ -1,14 +1,84 @@
+body{
+    background-color: rgb(221, 221, 221);
+    margin:0;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    
+}
+.navbar{
+    width: 100%;
+    background-color: white;
+    overflow: hidden;
+    height:60px;
+}
 .logo{
     margin: auto;
     font-size: 150px;
-    width:300px;
-    height: 70px;
+    width:200px;
+    height: 60px;
+   
+
+}
+.center{
+   margin: auto;
+   background-color: white;
+   width:550px;
+   height: 395px;
+   margin-bottom: 30px;
+   border-radius: 25px;
 
 }
 .Welcome{
+    padding: 15px;
+    font-size: 100px;
+    font-family: Sharp Sans;
+    position:relative;
+    margin-top:250px;
+    text-align: center;
+    transition: opacity 1s ease-in;
+   
+    
+}
+.info{
+    width: 75%;
+    margin:auto;
+    font-family: Sharp Sans;
+    padding-bottom: 30px;
+}
+.Bar{
+    border-radius: 0px 0px 25px 25px;
+    width: 100%;
+    background-color: rgb(60, 173, 75);
+    height: 100px;
+}
+.topic{
+    float:left;
+    width: 33.333%;
+    text-align: center;
+    padding-top:30px;
+    height:100%;
+    color:white;
+    font-family:Sharp Sans;
+    font-size:30px;
+    
+}
+.topic:hover{
+    transition-duration: .3s;
+    color: black;
+    background-color: white;
+    border-radius: 0px 0px 25px 25px;
+    padding: 0;
 
-    margin-left: 50%;
-    margin-bottom: 40px;
+}
+.Description{
+    width: 500px;
+    margin: auto;
+    font-family: Sharp Sans;
+    font-size: 30px;
+    margin-top: 20px;
+    border: 1px solid #77aaff;
+   
 }
 .enter_button{
 

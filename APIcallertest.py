@@ -8,12 +8,13 @@ import ipaddress
 
 class L3FWmatching:  # Class with API calls and L3 matching methods
     def __init__(self):
-        self.APIkey = input("Please define an API key for your org: ")
-        self.networkID = input("Please enter network ID to fetch L3 rules: ")
+        self.APIkey = "4b659bfed83b89db39b7e34ba74edb4491dd1f74"
+        # self.APIkey = input("Please define an API key for your org: ")
         self.L3FWresponse = None
+        self.networkID = None
         self.vlan_subnet_mapping = {}
 
-    def getDevice(self): # Method that gets device data and formats it
+    def getDevice(self):  # Method that gets device data and formats it
         dashboard = meraki.DashboardAPI(self.APIkey)
         time.sleep(.5)
         self.serial = input("Please enter the serial number for the device you would like to get info from: ")
@@ -22,32 +23,33 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
         text = json.dumps(self.devResponse, sort_keys=True, indent=4)
         print("Device info: \n", text)
 
-    def resolveVLANIDtoIP(self): # Method that handles turning a VLAN ID into CIDR
+    def resolveVLANIDtoIP(self):  # Method that handles turning a VLAN ID into CIDR
         dashboard = meraki.DashboardAPI(self.APIkey)
         time.sleep(.5)
         self.VLANinfo = dashboard.appliance.getNetworkApplianceVlans(self.networkID)
         time.sleep(.5)
         text = json.dumps(self.VLANinfo, sort_keys=True, indent=4)
-        print("VLAN info: \n", text)
+        #print("VLAN info: \n", text)
 
         for vlan in self.VLANinfo:
             vlan_id = vlan['id']
             vlan_subnet = vlan['subnet']
             self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"] = vlan_subnet
 
-    def getL3firewallrules(self): # Method that gets L3 firewall rules and prints them
+    def getL3firewallrules(self):  # Method that gets L3 firewall rules and prints them
+        self.networkID = "L_3695766444210919362"
+        # self.networkID = input("Please enter network ID to fetch L3 rules: ")
         dashboard = meraki.DashboardAPI(self.APIkey)
         time.sleep(.5)
         self.L3FWresponse = dashboard.appliance.getNetworkApplianceFirewallL3FirewallRules(self.networkID)
-        self.L3FWresponse = {'rules': [{'comment': 'VLAN tag testing', 'policy': 'deny', 'protocol': 'any', 'srcPort': 'Any',
-                                        'srcCidr': 'VLAN(2).*', 'destPort': 'Any', 'destCidr': 'VLAN(5).*', 'syslogEnabled': False}]}
         time.sleep(.5)
         obj.resolveVLANIDtoIP()
         time.sleep(.5)
         text = json.dumps(self.L3FWresponse, sort_keys=True, indent=4)
         print("L3 FW rules: \n", text)
 
-    def matchFirewallPolicy(self, source_ip, dest_ip): # Method that handles policy matching and prints out the results
+    def matchFirewallPolicy(self, source_ip, dest_ip, source_port, dest_port, protocol):
+        # Method that handles policy matching and prints out the results
         if self.L3FWresponse is None:
             print("L3 firewall rules not fetched. Please call getL3firewallrules first.")
             return
@@ -56,17 +58,20 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
 
         for rule in self.L3FWresponse['rules']:
             if (
-                rule['comment'] == "Default rule" and
-                rule['srcCidr'] == "Any" and
-                rule['destCidr'] == "Any" and
-                rule['protocol'] == "any" and
-                rule['policy'] == "allow"
+                    rule['comment'] == "Default rule" and
+                    rule['srcCidr'] == "Any" and
+                    rule['destCidr'] == "Any" and
+                    rule['protocol'] == "any" and
+                    rule['policy'] == "allow"
             ):
                 matching_rule = rule
                 break
             if (
-                (rule['srcCidr'] == "Any" or self.ip_in_rule(source_ip, self.resolve_vlan_cidr(rule['srcCidr']))) and
-                (rule['destCidr'] == "Any" or self.ip_in_rule(dest_ip, self.resolve_vlan_cidr(rule['destCidr'])))
+                    (rule['srcCidr'] == "Any" or self.ip_in_rule(source_ip, self.resolve_vlan_cidr(rule['srcCidr']))) and
+                    (rule['destCidr'] == "Any" or self.ip_in_rule(dest_ip, self.resolve_vlan_cidr(rule['destCidr']))) and
+                    (rule['srcPort'] == "Any" or int(rule['srcPort']) == source_port) and
+                    (rule['destPort'] == "Any" or int(rule['destPort']) == dest_port) and
+                    (rule['protocol'] == "any" or rule['protocol'].lower() == protocol.lower())
             ):
                 matching_rule = rule
                 break
@@ -83,7 +88,7 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
         else:
             print("No matching L3 firewall rule found.")
 
-    def ip_in_rule(self, ip, rule_cidr): # Checks if IP is in a policy using IP library
+    def ip_in_rule(self, ip, rule_cidr):  # Checks if IP is in a policy using IP library
         try:
             ip_obj = ipaddress.ip_address(ip)
             rule_cidrs = [rule.strip() for rule in rule_cidr.split(",")]
@@ -95,24 +100,28 @@ class L3FWmatching:  # Class with API calls and L3 matching methods
         except ValueError:
             return False
 
-    def resolve_vlan_cidr(self, cidr_str): # Resolves VLAN ID to cidr subnet
+    def resolve_vlan_cidr(self, cidr_str):  # Resolves VLAN ID to cidr subnet
         if cidr_str in self.vlan_subnet_mapping:
             return self.vlan_subnet_mapping[cidr_str]
         return cidr_str
 
-    def methodDecision(self): # Method that takes user input to decide which method to call
-        self.choice = int(input("1. Device info\n"
-              "2. L3 firewall rules\n"
-              "Please choose which what you would like to fetch: "))
+    def methodDecision(self):  # Method that takes user input to decide which method to call
 
-        if self.choice == 1:
-            obj.getDevice()
-        elif self.choice == 2:
-            obj.getL3firewallrules()
-        else:
-            print("Invalid option, please select a number 1-2")
-            return
+        while True:
+            self.choice = int(input("1. Device info\n"
+                                    "2. L3 firewall rules\n"
+                                    "3. Exit\n"
+                                    "Please choose which what you would like to do: "))
 
+            if self.choice == 1:
+                obj.getDevice()
+            elif self.choice == 2:
+                obj.getL3firewallrules()
+                break
+            elif self.choice == 3:
+                return
+            else:
+                print("Invalid option, please select a number 1-3")
 
 
 if __name__ == '__main__':
@@ -122,4 +131,15 @@ if __name__ == '__main__':
     if obj.choice == 2:
         source_ip = input("Enter the source IP: ")
         dest_ip = input("Enter the destination IP: ")
-        obj.matchFirewallPolicy(source_ip, dest_ip)
+
+        # Handle 'Any' or 'any' for source port
+        source_port_input = input("Enter the source port (0-65535 or Any): ")
+        source_port = None if source_port_input.lower() == 'any' else int(source_port_input)
+
+        # Handle 'Any' or 'any' for destination port
+        dest_port_input = input("Enter the destination port (0-65535 or Any): ")
+        dest_port = None if dest_port_input.lower() == 'any' else int(dest_port_input)
+
+        protocol = input("Enter the protocol (TCP, UDP, ICMP, ICMP6, ANY): ")
+        obj.matchFirewallPolicy(source_ip, dest_ip, source_port, dest_port, protocol)
+

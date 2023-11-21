@@ -1,7 +1,7 @@
 body{
     margin:0;
     width: 100%;
-    background-color: rgb(232, 247, 237);
+    background-color: rgb(255, 255, 255);
     align-items: center;
     justify-content: center;
     
@@ -10,18 +10,40 @@ body{
     width: 100%;
     background-color: white;
     overflow: hidden;
-    height:50px;
+    height:60px;
 
 }
 
+img{
+    margin-bottom: 10px;
+}
 
-.left_column{
+.top_column{
     margin-top: 0px;
     height: 50px;
     width:100%;
     overflow: hidden;
     background-color: rgb(219, 219, 219);
     
+}
+.left{
+    background-color: rgb(60, 173, 75);
+    float:left;
+    width: 33%;
+    height:100%;
+    min-width: 220px;
+}
+.right{
+    width:67%;
+    height:100%;
+    float:left;
+    background-color: rgb(255, 255, 255);
+}
+.bar{
+    height:1px;
+    width:100%;
+    background-color: rgb(219, 219, 219) ;
+    margin:0;
 }
 .sideBar{ 
     float: left;
@@ -35,29 +57,36 @@ body{
     outline-width: 2px;
     padding: 5px;
     padding-top: 15px;
-   
+    cursor: pointer;
+    
    
 }
 .sideBar:hover{
-    background-color: rgba(30, 212, 76, 0.566);
+    background-color: white;
     transition-duration: .3s;
+    
+}
+.sidebar:focus{
+   background-color: white; 
+
 }
 p{
+    padding-top: 20px;
     font-family: Sharp Sans;
     font-size: 20px;
+    color: white;
+    padding-left: 20px;
    
 }
 .content{
     display: none;
 }
-.Core{
-   margin-left:30%;
-   width:400px;
-   background-color: rgb(209, 209, 209);
-   border-radius: 25px;
-    text-align: center;
-    box-shadow: 2px 2px 4px #000000;
+h{
+    font-family: Sharp Sans;
+    margin-left: 12px;
+
 }
+
 .box{  
     display: none;
 }
@@ -67,12 +96,13 @@ p{
     
 }
 .API{
-    margin: auto;
+   
+    margin: 30px;
     height:30px;
 }
 
 .Snum{
-    margin: auto;
+    margin: 30px;
     height:30px;
 }
 
@@ -81,19 +111,36 @@ button{
     align-items: center;
     justify-content: center;
     font-size: auto;
-    margin:auto;
+    margin: auto;
     background-color: aliceblue;
     border-radius: 25px;
     height:30px;
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }
 .buttonBox{
-   
     border-radius: 25px;
     width: 300px;
     margin:auto;
     height: 60px;
 }
+
+table {
+    margin-top: 20px;
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    background-color: white;
+    border-radius: 25px;
+  }
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+  
 
 @media (max-width: 768px){
    
