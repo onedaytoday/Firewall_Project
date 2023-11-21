@@ -34,10 +34,12 @@ img{
     min-width: 220px;
 }
 .right{
-    width:67%;
+    width:25%;
     height:100%;
     float:left;
     background-color: rgb(255, 255, 255);
+    margin-left: 50px;
+   
 }
 .bar{
     height:1px;
@@ -70,13 +72,21 @@ img{
    background-color: white; 
 
 }
-p{
+#leftPage{
     padding-top: 20px;
     font-family: Sharp Sans;
     font-size: 20px;
     color: white;
     padding-left: 20px;
    
+}
+#rightPage{
+    font-family: Sharp Sans;
+    font-size: 20px;
+    color: black;
+}
+#Deviceinfo{
+    font-family: Sharp Sans;
 }
 .content{
     display: none;
@@ -94,15 +104,15 @@ h{
     margin: auto;
     height:30px;
     
+    
 }
 .API{
-   
-    margin: 30px;
+    margin-left: 30px;
     height:30px;
 }
 
 .Snum{
-    margin: 30px;
+    margin-left: 30px;
     height:30px;
 }
 
@@ -113,11 +123,21 @@ button{
     font-size: auto;
     margin: auto;
     background-color: aliceblue;
-    border-radius: 25px;
+    border-radius: 0px;
     height:30px;
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+    font-family: Sharp Sans;
+    border-color: white;
+    border-style:none;
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 20px;
+   
+}
+#DeviceButton{
+    background-color: rgb(60, 173, 75);
 }
 .buttonBox{
+    padding-top: 20px;
     border-radius: 25px;
     width: 300px;
     margin:auto;
@@ -143,7 +163,14 @@ tr:nth-child(even) {
   
 
 @media (max-width: 768px){
-   
+   .left{
+    width: 25%;
+   }
+   .right{
+    width:25%;
+    margin-left: 20px;
+   }
+
     .left_column{
         margin-left:0px;
     }
