@@ -29,6 +29,17 @@ def home_page_css():
     return render_template("hello.css")
 
 
+@app.route(rule='/welcome.css', methods=['GET'])
+def welcome_page_css():
+    print(request)
+    return render_template("welcome.css")
+
+@app.route(rule='/welcome.html', methods=['GET'])
+def welcome_page():
+    print(request)
+    return render_template("welcome.html")
+
+
 @app.route(rule='/logo3.jpg', methods=['GET'])
 def home_page_logo():
     print(request)
