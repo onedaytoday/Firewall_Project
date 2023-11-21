@@ -5,8 +5,66 @@
         </head>
         
         <body>
-        <script>
+        
+        
+        <div class="navbar"><img src="logo3.jpg" width="200px" ></div>
+        
+        <div class="bar"></div>
+       
+        <div class="top_column">
+                
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(2)">Device</div>
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(3)">Firewall Info</div>
+                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(4)">Firewall Check</div>
+        </div>
 
+        <div class="left">
+                <p id="leftPage">Enter your API Key:</p>
+        <input type="text" class="API" name="API" id="Api" placeholder="API Key.."><br><br>
+        <p id="leftPage">Enter your serial number:</p>
+        <input type="text"  class="Snum" name="Snum" id="Snum" placeholder="Serial number.."><br><br>
+        <div class="buttonBox"><button onclick="send_Serialapi()">Go To Device</button></div>
+        <div id="info"></div>
+        </div>
+        
+
+        <div class="right">
+        <div class="content" id="content2">
+                <p id="rightPage">Display Device Info:</p>
+                <div id="Deviceinfo"></div>
+                <div class="buttonBox"><button id="DeviceButton" onclick="showContent(3)">Firewall Info</button></div>
+                <div class="buttonBox"><button id="DeviceButton" onclick="displayFirewall()">Display ALL Firewalls</button></div>
+        </div>
+
+
+        
+        <div class="content" id="content3">
+                <div class="row1">
+                        <p id="rightPage">Please Enter Source IP:</p>
+                        <input type="'text" class="inputBox" name=" SourceIp" id="SourceIp">
+                        <p id="rightPage">Please Enter Destination IP:</p>
+                        <input type="text" class="inputBox" name="DesIp" id="DesIp">
+                        <p id="rightPage">Enter Source port:</p>
+                        <input type="text" class="inputBox" name="SrcPort" id="SrcPort">
+                        <p id="rightPage">Enter Destination Port:</p>
+                        <input type="text" class="inputBox" name="DesPort" id="DesPort">
+                        <p id="rightPage">Enter Protocol:</p>
+                        <input type="text" class="inputBox" name="Protocol" id="Protocol">
+                </div>
+                <div class="buttonBox"><button id="DeviceButton" onclick="send_Firewall_Info()">Check Firewalls</button></div>      
+      
+        </div>
+        
+        <div class="content" id="content4">
+               <div id="container"></div>
+        
+        </div></div>
+        
+        <script>
+                var counter=0;
+                var Snum;
+                var Api;
+                var domain="http://127.0.0.1:5000";
                 function sendData(){
                         
                 document.getElementById('input').innerHTML = 'yes'
@@ -47,11 +105,11 @@
                function send_Serialapi(){
                 showContent(2)
                 document.getElementById('Deviceinfo').innerHTML = 'List for device Info'
-                var Api = document.getElementById("Api").value;
-                var Snum = document.getElementById("Snum").value;
+                Api = document.getElementById("Api").value;
+                Snum = document.getElementById("Snum").value;
                 const xhr = new XMLHttpRequest();
 
-                var url = "http://127.0.0.1:5000'/check"//add domain name
+                var url = "http://127.0.0.1:5000/check"//add domain name
                 xhr.open("POST", url);//opens url
                 xhr.setRequestHeader("Content-type", "application/json");
 
@@ -69,17 +127,18 @@
                 xhr.send(body); //sends data to server 
                }
 
-               function send_Firewall_Info(){
+               function send_Firewall_Info(){//test packet
                 showContent(4)
-                var Snum = document.getElementById("Snum").value;
-                var Api = document.getElementById("Api").value;
+                convert()
                 var srcIP = document.getElementById("SourceIp").value;
                 var destIP = document.getElementById("DesIp").value;
                 var srcPort = document.getElementById("SrcPort").value;
                 var desPort= document.getElementById("DesPort").value;
                 var Protocol= document.getElementById("Protocol").value;
 
-                var url = "http://127.0.0.1:5000'/check"// + check
+                domain = "http://127.0.0.1:5000"
+
+                var url = domain + "/check"
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", url)
                 xhr.setRequestHeader("Content-Type", "application/json")
@@ -98,89 +157,89 @@
                         document.getElementById('Display_Firewall_Info').innerHTML = xhr.response
                 console.log(xhr.response)
                 }
-
+               
+                //
                 //send error if serial and api were no filled out
                }
+             //function to display all firewall
+                function convert() {
+                        counter++;
+                        
+                        
+                       
+         // Sample JSON data
+         let jsonData = [
+            {
+                Description:"",
+                srcport: "",
+               SourceIP: "",
+               DestinationIP:"",
+               DestinationPolicy: "",
+               Protocol:""
+            },
+            {
+                Description:"",
+                srcport: "",
+               SourceIP: "",
+               DestinationIP:"",
+               DestinationPolicy: "",
+               Protocol:""
+            },
+            {
+                Description:"",
+                srcport: "",
+               SourceIP: "",
+               DestinationIP:"",
+               DestinationPolicy: "",
+               Protocol:""
+            }
+         ];
+         
+
+         let container = document.getElementById("container");
+         
+         
+         let table = document.createElement("table");
+         
+         // Get the keys (column names) of the first object in the JSON data
+         let cols = Object.keys(jsonData[0]);
+         
+         // Create the header element
+         let thead = document.createElement("thead");
+         let tr = document.createElement("tr");
+
+         
+         // Loop through the column names and create header cells
+         cols.forEach((item) => {
+            let th = document.createElement("th");
+            th.innerText = item; 
+            tr.appendChild(th); 
+         });
+         thead.appendChild(tr); 
+         table.append(tr) 
+         
+         if( counter >= 2){
+                             document.getElementById("container").innerHTML = "";
+                        }
+         jsonData.forEach((item) => {
+            let tr = document.createElement("tr");
+            // Get the values of the current object in the JSON data
+                let vals = Object.values(item);  
+            vals.forEach((elem) => { // Loop through the values and create table cells
+               let td = document.createElement("td");
+               td.innerText = elem; 
+               tr.appendChild(td); 
+            });
+            table.appendChild(tr); 
+         });
+         container.appendChild(table) 
+      }
+         
+         
+         
+               
+               //update and pull data 
 
 
         </script>
-        
-        <div class="navbar"><img src="logo3.jpg" width="200px" ></div>
-        
-        <div class="bar"></div>
-       
-        <div class="top_column">
-                
-                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(2)">Device</div>
-                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(3)">Firewall Info</div>
-                <div class="sideBar" id="focus" tabindex="0" onclick="showContent(4)">Firewall Check</div>
-        </div>
-
-        <div class="left">
-                <p>Enter your API Key:</p>
-        <input type="text" class="API" name="API" id="Api" placeholder="API Key.."><br><br>
-        <p>Enter your serial number:</p>
-        <input type="text"  class="Snum" name="Snum" id="Snum" placeholder="Serial number.."><br><br>
-        <div class="buttonBox"><button onclick="send_Serialapi()">Go To Device</button></div>
-        <div id="info"></div>
-        </div>
-        
-       
-
-        
-
-        <div class="right">
-        <div class="content" id="content2">
-                <p>Display Device Info:</p>
-                <div id="Deviceinfo"></div>
-                
-        </div>
-
-
-        
-        <div class="content" id="content3">
-               
-                <div class="row1">
-                        <p>Please Enter Source IP:</p>
-                        <input type="'text" class="inputBox" name=" SourceIp" id="SourceIp">
-                        <p>Please Enter Destination IP:</p>
-                        <input type="text" class="inputBox" name="DesIp" id="DesIp">
-                        <p>Enter Source port:</p>
-                        <input type="text" class="inputBox" name="SrcPort" id="SrcPort">
-                        <p>Enter Destination Port:</p>
-                        <input type="text" class="inputBox" name="DesPort" id="DesPort">
-                        <p>Enter Protocol:</p>
-                        <input type="text" class="inputBox" name="Protocol" id="Protocol">
-                </div>
-                <div class="buttonBox"><button onclick="send_Firewall_Info()">Check Firewalls</button></div>      
-      
-        </div>
-        
-        <div class="content" id="content4">
-               <table>
-                <tr>
-                        <th>Desscription</th>
-                        <th>Protocol</th>
-                        <th>Src Port</th>
-                        <th>Des Port</th>
-                        <th>Src IP Range</th>
-                        <th>Des IP Range</th>
-                        <th>Policy</th>
-                </tr>
-                <tr>
-                        <th>
-                                
-                        </th>
-                          
-                </tr>
-               </table>
-                <table id="input">NO</p>
-        <label for="code">Code:</label>
-        <input type="text" id="code" name="code"><br><br>
-        <label for="code">Serial:</label>
-        <input type="text" id="serial" name="serial"><br><br>
-        <button onclick="sendData()">Click me</button>
-        </div></div>
-        
-        
         </body> 
