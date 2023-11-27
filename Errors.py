@@ -28,3 +28,9 @@ class InvalidDestinationIP(DashExceptions):
 
 class MissMatchedIPTypes(DashExceptions):
     pass
+
+class SerialNumberIsNotMX(DashExceptions):
+    pass
+
+class InvalidFile(DashExceptions):
+    pass

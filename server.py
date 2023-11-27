@@ -1,6 +1,10 @@
 import ipaddress
+import os
+import FileFirewallCheck
 from flask import Flask, request, json, render_template, send_file
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
+
 import Errors
 import auth
 import Packet
@@ -12,27 +16,42 @@ destIPVariableName = 'destIP'
 srcPortVariableName = 'srcPort'
 destPortVariableName = 'destPort'
 protocolVariableName = 'proto'
+UPLOAD_FOLDER = 'Uploads'
 
 app = Flask(__name__)
 cors = CORS(app)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 @app.route(rule='/', methods=['GET'])
+def default_page():
+    print(request)
+    return render_template("welcome.html")
+
+
+@app.route(rule='/hello.html', methods=['GET'])
 def home_page():
     print(request)
     return render_template("hello.html")
 
 
+@app.route(rule='/favicon.png', methods=['GET'])
+def favicon():
+    print(request)
+    return send_file("templates/favicon.png", mimetype="image/png")
+
+
 @app.route(rule='/hello.css', methods=['GET'])
 def home_page_css():
     print(request)
-    return render_template("hello.css")
+    return send_file("templates/hello.css")
 
 
 @app.route(rule='/welcome.css', methods=['GET'])
 def welcome_page_css():
     print(request)
-    return render_template("welcome.css")
+    return send_file("templates/welcome.css")
+
 
 @app.route(rule='/welcome.html', methods=['GET'])
 def welcome_page():
@@ -65,7 +84,7 @@ def server_request_handler():
     data = "SecretCode"
     response = Flask.response_class(
         response=data,
-        status="202"
+        status="200"
     )
     return response
 
@@ -89,7 +108,7 @@ def test_code_and_serial():
         data = TestPacket.to_string() + " is " + outcome.get_value()
         response = Flask.response_class(
             response=data,
-            status="202"
+            status="200"
         )
         print(outcome)
     except Exception as e:
@@ -101,6 +120,24 @@ def test_code_and_serial():
     return response
 
 
+@app.route('/get-firewall', methods=['POST'])
+def get_firewall():
+    try:
+        print(request)
+        req = request.get_json()
+        dash = auth.MerakiDash(req.get(keyVariableName))
+        dash.fetch_network(req.get(serialVariableName))
+        firewall = dash.get_firewall()
+        output = firewall.get_firewall_rules_json()
+        response = Flask.response_class(
+            response=output,
+            status="200"
+        )
+        return response
+    except Exception as e:
+        return respond_to_exception(e)
+
+
 @app.route('/check', methods=['POST'])
 def check_code_and_serial_and_firewall():
     req = request.get_json()
@@ -109,21 +146,22 @@ def check_code_and_serial_and_firewall():
         MX = auth.MerakiDash(req.get(keyVariableName))
         MX.fetch_network(req.get(serialVariableName))
         MXFirewall = MX.get_firewall()
-        MXFirewall.print()
+        print('B')
         TestPacket = Packet.Packet(srcport=req.get(srcPortVariableName),
                                    destport=req.get(destPortVariableName),
                                    source_ip=req.get(srcIPVariableName),
                                    destination_ip=req.get(destIPVariableName),
                                    protocol=req.get(protocolVariableName)
                                    )
+        print("A")
         TestPacket.print()
         outcome, matched_rule = MXFirewall.find_matching_rule(TestPacket)
         print(outcome.get_value())
         output = json.dumps([outcome.get_value(), matched_rule.get_rule_json()])
         print(output)
         response = Flask.response_class(
-            response = output,
-            status="202"
+            response=output,
+            status="200"
         )
         print(outcome)
         return response
@@ -138,26 +176,28 @@ def check_key():
         auth.MerakiDash(req.get(serialVariableName))
         response = Flask.response_class(
             response=True,
-            status="202"
+            status="200"
         )
         return response
     except Exception as e:
         return respond_to_exception(e)
 
 
-@app.route(rule='/check_key_and_serial')
+@app.route(rule='/check_key_and_serial', methods=['POST'])
 def check_key_and_serial():
     try:
         req = request.get_json()
         dash = auth.MerakiDash(req.get(keyVariableName))
         dash.fetch_network(req.get(serialVariableName))
+        info = dash.get_network_info()
+
         response = Flask.response_class(
-            response=True,
-            status="202"
+            response=info,
+            status="200"
         )
         return response
     except Exception as e:
-        respond_to_exception(e)
+        return respond_to_exception(e)
 
 
 def respond_to_exception(e):
@@ -186,12 +226,56 @@ def respond_to_exception(e):
     elif isinstance(e, Errors.MissMatchedIPTypes):
         Error = "Mismatched IP types"
         Status = 707
+    elif isinstance(e, Errors.SerialNumberIsNotMX):
+        Error = "Not MX Serial"
+        Status = 708
+    elif isinstance(e, Errors.SerialNumberIsNotMX):
+        Error = "InvalidFile"
+        Status = 709
 
     response = Flask.response_class(
         response=Error,
         status=str(Status)
     )
     return response
+
+
+@app.route('/fileUpload', methods=['POST'])
+def upload_csv_and_check():
+    try:
+        if 'file' not in request.files:
+            raise Errors.InvalidFile()
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            raise Errors.InvalidFile()
+        if not (file and allowed_file(file.filename)):
+            raise Errors.InvalidFile()
+
+        filename = secure_filename(file.filename)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(path)
+
+        myJson = request.values.get('data')
+        myJson = json.loads(myJson)
+
+        key = myJson.get(keyVariableName)
+        serial = myJson.get(serialVariableName)
+
+        MX = auth.MerakiDash(key)
+        MX.fetch_network(serial)
+
+        FileFirewallCheck.CSVPacketChecker(filename, MX)
+        return send_file(path, as_attachment=True)
+
+    except Exception as e:
+        return respond_to_exception(e)
+
+
+def allowed_file(filename):
+    output = '.' in filename and filename.rsplit('.', 1)[1].lower() == 'csv'
+    return output
 
 
 # FLASK_APP=server.py flask run --cert=adhoc

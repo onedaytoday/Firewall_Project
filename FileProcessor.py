@@ -8,7 +8,6 @@ import Packet
 
 def parse_csv(file):
     output = list(csv.reader(file, delimiter=","))
-    print(output)
     return output
 
 

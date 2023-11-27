@@ -38,10 +38,6 @@ class Layer3Firewall:
         for rule in self.Rules:
             decision = rule.rule_decision(packet)
             if decision == Layer3Firewall.Decision.Allow or decision == Layer3Firewall.Decision.Block:
-                print()
-                print("Rule that matched is")
-                rule.print()
-                print()
                 return decision
 
         return self.DEFAULT_DECISION
@@ -59,6 +55,9 @@ class Layer3Firewall:
         for rule in self.Rules:
             output.append(rule.get_rule_to_dic())
         return output
+
+    def get_firewall_rules_json(self):
+        return json.dumps(self.get_firewall_rules())
 
     class Decision(Enum):
         NO_MATCH = "no match"

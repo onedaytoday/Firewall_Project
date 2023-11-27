@@ -1,3 +1,4 @@
+import logging
 import time
 import Layer3Firewall
 import ipaddress
@@ -11,7 +12,7 @@ class MerakiDash:
         self.vlan_subnet_mapping = {}
         self.jsonRules = None
         try:
-            self.session = meraki.DashboardAPI(api_key=key, output_log=False)
+            self.session = meraki.DashboardAPI(api_key=key, output_log=False, print_console=False, suppress_logging=True)
         except:
             raise Errors.WrongDashKey()
 
@@ -26,8 +27,14 @@ class MerakiDash:
             self.networkId = device.get('networkId')
         except:
             raise Errors.NoNetworkFound()
+        if not 'MX' in device.get('model'):
+            raise Errors.SerialNumberIsNotMX()
+
         self.resolveVLANIDtoIP()
 
+    def get_network_info(self):
+        networkInfo = self.session.networks.getNetwork(self.networkId)
+        return networkInfo.get('name')
     @staticmethod
     def print_json_nicely(a):
         text = json.dumps(a, sort_keys=True, indent=4)

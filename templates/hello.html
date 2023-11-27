@@ -1,7 +1,9 @@
 <head>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-        <link rel="stylesheet" href="hello.css">
-        <link rel="stylesheet" href="https://brandfolder.com/meraki/general/#!asset/qg0042-b3sbgg-akw5r4">
+        <link rel="stylesheet" href="hello.css"/>
+        <link rel="icon" type="image/png" href="favicon.png"/>
+        <link rel="stylesheet" href="https://brandfolder.com/meraki/general/#!asset/qg0042-b3sbgg-akw5r4"/>
+        <title>Team IDEO</title>
         </head>
         
         <body>
@@ -30,10 +32,10 @@
 
         <div class="right">
         <div class="content" id="content2">
-                <p id="rightPage">Display Device Info:</p>
+                <p id="rightPage">Network Name:</p>
                 <div id="Deviceinfo"></div>
                 <div class="buttonBox"><button id="DeviceButton" onclick="showContent(3)">Firewall Info</button></div>
-                <div class="buttonBox"><button id="DeviceButton" onclick="displayFirewall()">Display ALL Firewalls</button></div>
+                <div class="buttonBox"><button id="DeviceButton" onclick="show_all_firewall()">Display ALL Firewalls</button></div>
         </div>
 
 
@@ -50,6 +52,14 @@
                         <input type="text" class="inputBox" name="DesPort" id="DesPort">
                         <p id="rightPage">Enter Protocol:</p>
                         <input type="text" class="inputBox" name="Protocol" id="Protocol">
+                        <br>
+                        <br>
+                        <form id="rightPage">
+                          <label for="file">Import CSV:</label>
+                          <br>
+                          <input style="text-align:left" id="file" type="file" />
+                        </form>
+
                 </div>
                 <div class="buttonBox"><button id="DeviceButton" onclick="send_Firewall_Info()">Check Firewalls</button></div>      
       
@@ -65,13 +75,99 @@
                 var Snum;
                 var Api;
                 var domain="http://127.0.0.1:5000";
+
+
+                function show_all_firewall(){
+                        showContent(4)
+
+                        var serial = document.getElementById('Snum').value
+                        var code = document.getElementById('Api').value
+                        var data = {'Api': code, 'Snum': serial}
+                        var dataJ = JSON.stringify(data)
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', domain+'/get-firewall');
+                        xhr.setRequestHeader("Content-Type", "application/json")
+                        xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
+
+                        xhr.onload =  function () {
+                                console.log(xhr.response)
+                                var jsonVal = JSON.parse(xhr.response)
+                                convert(jsonVal)
+                        }
+
+                        xhr.send(dataJ);
+
+
+
+                }
+
+                $('#file').on('change', function() {
+                        var fileSelect = document.getElementById('file');
+                        var files = fileSelect.files;
+                        var code = document.getElementById('Api').value
+                        var serial = document.getElementById('Snum').value
+                        var data = {'Api': code, 'Snum': serial}
+                        data = JSON.stringify(data)
+                        var formData = new FormData();
+                        var file = files[0];
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', domain+'/fileUpload', true);
+                        formData.append("file", file);
+                        formData.append("data", data)
+                        xhr.onload = function () {
+                                  if (xhr.status === 200) {
+                                        alert('Your upload is successful..');
+                                        var blob = new Blob([this.response], {type: 'text/csv;charset=utf-8'});
+                                        //Create a link element, hide it, direct it towards the blob, and then 'click' it programatically
+                                        let a = document.createElement("a");
+                                        a.style = "display: none";
+                                        document.body.appendChild(a);
+                                        //Create a DOMString representing the blob and point the link element towards it
+                                        let url = window.URL.createObjectURL(blob);
+                                        a.href = url;
+                                        a.download = 'myFile.csv';
+                                        //programatically click the link to trigger the download
+                                        a.click();
+                                        //release the reference to the file by revoking the Object URL
+                                        window.URL.revokeObjectURL(url);
+                                  } else {
+                                    alert('An error occurred during the upload. Try again.');
+                                  }
+                        };
+
+                                // Send the data.
+                        xhr.send(formData);
+                        });
+
+
+                function displayFirewall(){
+
+                var url = "http://127.0.0.1:5000"
+                // add domain name
+                const xhr = new XMLHttpRequest();
+                xhr.open("POST", domain+'/get-firewall')
+                xhr.setRequestHeader("Content-Type", "application/json")
+                xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
+                xhr.onreadystatechange = () => {
+                      // Call a function when the state changes.
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                // Request finished. Do processing here.
+                        }
+                      };
+                var code = document.getElementById('Api').value
+                var serial = document.getElementById('Snum').value
+                output = JSON.stringify({Api:code, Snum:serial})
+                xhr.send(output);
+                xhr.onload = function(){
+                        console.log(xhr.response)
+                        }
+                }
                 function sendData(){
                         
                 document.getElementById('input').innerHTML = 'yes'
-                var url = "http://127.0.0.1:5000/test"
                 // add domain name
                 const xhr = new XMLHttpRequest();
-                xhr.open("POST", url)
+                xhr.open("POST", domain+'/test')
                 xhr.setRequestHeader("Content-Type", "application/json")
                 xhr.setRequestHeader("Access-Control-Allow-Origin", "*")
                 xhr.onreadystatechange = () => {
@@ -82,7 +178,6 @@
                       };
                 var code = document.getElementById('code').value
                 var serial = document.getElementById('serial').value
-                var TestPacket= {src: 1, des:2}
                 output = JSON.stringify({code:code, serial:serial, TestPacket: TestPacket})
                 xhr.send(output);
                 xhr.onload = function(){
@@ -109,34 +204,33 @@
                 Snum = document.getElementById("Snum").value;
                 const xhr = new XMLHttpRequest();
 
-                var url = "http://127.0.0.1:5000/check"//add domain name
-                xhr.open("POST", url);//opens url
+                xhr.open("POST", domain+'/check_key_and_serial');//opens url
                 xhr.setRequestHeader("Content-type", "application/json");
 
                 const body = JSON.stringify({Api:Api, Snum:Snum});
+                document.getElementById('Deviceinfo').innerHTML = "Attempting Communication..."
+
                 xhr.onreadystatechange = () =>{
+
                         if (xhr.readyState === XMLHttpRequest.DONE && xhr.status == 200){//if server is ready will do processing
-                                document.getElementById('info').innerHTML = 'Please go to Device Info'
+                                document.getElementById('Deviceinfo').innerHTML = "Processing"
                         }
                 };
 
                 xhr.onload = () => { //listener event 
-                        const data = JSON.parse(xhr.response);//parse data out of string
+                        document.getElementById('Deviceinfo').innerHTML = xhr.response
                         console.log(xhr.response);//gets response from server
                 };
                 xhr.send(body); //sends data to server 
                }
 
                function send_Firewall_Info(){//test packet
-                showContent(4)
-                convert()
                 var srcIP = document.getElementById("SourceIp").value;
                 var destIP = document.getElementById("DesIp").value;
                 var srcPort = document.getElementById("SrcPort").value;
                 var desPort= document.getElementById("DesPort").value;
                 var Protocol= document.getElementById("Protocol").value;
 
-                domain = "http://127.0.0.1:5000"
 
                 var url = domain + "/check"
                 const xhr = new XMLHttpRequest();
@@ -157,43 +251,18 @@
                        // document.getElementById('Display_Firewall_Info').innerHTML = xhr.response
                 console.log(xhr.response)
                 }
-               
+
                 //
                 //send error if serial and api were no filled out
                }
              //function to display all firewall
-                function convert() {
+                function convert(data) {
                         counter++;
                         
                         
                        
          // Sample JSON data
-         let jsonData = [
-            {
-                Description:"",
-                srcport: "",
-               SourceIP: "",
-               DestinationIP:"",
-               DestinationPolicy: "",
-               Protocol:""
-            },
-            {
-                Description:"",
-                srcport: "",
-               SourceIP: "",
-               DestinationIP:"",
-               DestinationPolicy: "",
-               Protocol:""
-            },
-            {
-                Description:"",
-                srcport: "",
-               SourceIP: "",
-               DestinationIP:"",
-               DestinationPolicy: "",
-               Protocol:""
-            }
-         ];
+         let jsonData = data
          
 
          let container = document.getElementById("container");
