@@ -61,7 +61,8 @@
                         </form>
 
                 </div>
-                <div class="buttonBox"><button id="DeviceButton" onclick="send_Firewall_Info()">Check Firewalls</button></div>      
+                <div class="buttonBox"><button id="DeviceButton" onclick="send_Firewall_Info()">Check Firewalls</button></div>
+                <div id="Display_Firewall_Info"></div>
       
         </div>
         
@@ -244,11 +245,11 @@
                 destIP: destIP,
                 srcPort:srcPort,
                 desPort:desPort,
-                Protocol:Protocol})
+                proto:Protocol})
 
                 xhr.send(output);
                 xhr.onload = function(){
-                       // document.getElementById('Display_Firewall_Info').innerHTML = xhr.response
+                       document.getElementById('Display_Firewall_Info').innerHTML = xhr.response
                 console.log(xhr.response)
                 }
 

@@ -32,6 +32,8 @@ class Packet:
         srcIP = ""
         if self.protocol == None:
             protocol = "Any"
+        else:
+            protocol = self.protocol
         if self.src_port == None or self.src_port == 0:
             srcPort = "Any"
         else:
@@ -52,7 +54,7 @@ class Packet:
         else:
             desIP= str(self.dest_ip)
 
-        print(f'{srcPort} {srcIP} {desIP} {desPort}')
+        print(f'{srcPort} {srcIP} {desIP} {desPort} {protocol}')
         return
 
     def to_string(self):

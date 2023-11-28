@@ -14,7 +14,7 @@ serialVariableName = 'Snum'
 srcIPVariableName = 'srcIP'
 destIPVariableName = 'destIP'
 srcPortVariableName = 'srcPort'
-destPortVariableName = 'destPort'
+destPortVariableName = 'desPort'
 protocolVariableName = 'proto'
 UPLOAD_FOLDER = 'Uploads'
 
@@ -25,49 +25,41 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route(rule='/', methods=['GET'])
 def default_page():
-    print(request)
     return render_template("welcome.html")
 
 
 @app.route(rule='/hello.html', methods=['GET'])
 def home_page():
-    print(request)
     return render_template("hello.html")
 
 
 @app.route(rule='/favicon.png', methods=['GET'])
 def favicon():
-    print(request)
     return send_file("templates/favicon.png", mimetype="image/png")
 
 
 @app.route(rule='/hello.css', methods=['GET'])
 def home_page_css():
-    print(request)
     return send_file("templates/hello.css")
 
 
 @app.route(rule='/welcome.css', methods=['GET'])
 def welcome_page_css():
-    print(request)
     return send_file("templates/welcome.css")
 
 
 @app.route(rule='/welcome.html', methods=['GET'])
 def welcome_page():
-    print(request)
     return render_template("welcome.html")
 
 
 @app.route(rule='/logo3.jpg', methods=['GET'])
 def home_page_logo():
-    print(request)
     return send_file("templates/logo3.jpg", mimetype='image/jpg')
 
 
 @app.route('/', methods=['POST'])
 def default_handler():
-    print("Default")
     response = Flask.response_class(
         response="Y",
         status="201"
@@ -88,18 +80,17 @@ def server_request_handler():
 @app.route('/test', methods=['POST'])
 def test_code_and_serial():
     req = request.get_json()
-    print(request.get_json())
     try:
         MX = auth.MerakiDash(req.get(keyVariableName))
         MX.fetch_network(req.get(serialVariableName))
         MXFirewall = MX.get_firewall()
-        MXFirewall.print()
+        #MXFirewall.print()
         TestPacket = Packet.Packet(srcport=0,
                                    destport=0,
                                    source_ip=ipaddress.ip_address('172.16.1.4'),
                                    destination_ip=ipaddress.ip_address('172.16.2.1')
                                    )
-        TestPacket.print()
+        #TestPacket.print()
         outcome = MXFirewall.filter(TestPacket)
         data = TestPacket.to_string() + " is " + outcome.get_value()
         response = Flask.response_class(
@@ -119,7 +110,6 @@ def test_code_and_serial():
 @app.route('/get-firewall', methods=['POST'])
 def get_firewall():
     try:
-        print(request)
         req = request.get_json()
         dash = auth.MerakiDash(req.get(keyVariableName))
         dash.fetch_network(req.get(serialVariableName))
@@ -137,29 +127,28 @@ def get_firewall():
 @app.route('/check', methods=['POST'])
 def check_code_and_serial_and_firewall():
     req = request.get_json()
-    print(request.get_json())
+    print(req)
     try:
         MX = auth.MerakiDash(req.get(keyVariableName))
         MX.fetch_network(req.get(serialVariableName))
         MXFirewall = MX.get_firewall()
-        print('B')
         TestPacket = Packet.Packet(srcport=req.get(srcPortVariableName),
                                    destport=req.get(destPortVariableName),
                                    source_ip=req.get(srcIPVariableName),
                                    destination_ip=req.get(destIPVariableName),
                                    protocol=req.get(protocolVariableName)
                                    )
-        print("A")
+
         TestPacket.print()
         outcome, matched_rule = MXFirewall.find_matching_rule(TestPacket)
-        print(outcome.get_value())
+        #print(outcome.get_value())
         output = json.dumps([outcome.get_value(), matched_rule.get_rule_json()])
-        print(output)
+        #print(output)
         response = Flask.response_class(
             response=output,
             status="200"
         )
-        print(outcome)
+        #print(outcome)
         return response
     except Exception as e:
         return respond_to_exception(e)

@@ -72,10 +72,10 @@ class Layer3Firewall:
 
     class FirewallRule:
 
-        def __init__(self, decision, src_ip_range, dest_ip_range, description="", protocol=None, srcport=0, destport=0):
+        def __init__(self, decision, src_ip_range, dest_ip_range, description="", protocol=None, srcport=None, destport=None):
             self.name = ""
             self.description = description
-            self.protocol = protocol
+            self.protocol = str(protocol)
             self.src_port = srcport
             self.dest_port = destport
             self.src_ip_range = src_ip_range
@@ -124,8 +124,11 @@ class Layer3Firewall:
             }
 
         def matches_rule(self, packet):
-            src_port_match = self.src_port is None or self.src_port == 0 or self.src_port == packet.src_port
-            dest_port_match = self.dest_port is None or self.dest_port == 0 or self.dest_port == packet.dest_port
+            self.print()
+            src_port_match = (self.src_port is None or self.src_port == None or
+                              self.src_port == 0 or str(self.dest_port) == str(packet.dest_port))
+            dest_port_match = (self.dest_port is None or self.dest_port == None or
+                               self.dest_port == 0 or str(self.dest_port) == str(packet.dest_port))
 
             src_IP_match = False
             des_IP_match = False
@@ -141,7 +144,11 @@ class Layer3Firewall:
                 for ip_range in self.dest_ip_range:
                     des_IP_match = (is_in_range(ip_range, packet.dest_ip)
                                     or des_IP_match)
-            proto_match = self.protocol is None or self.protocol == packet.protocol
+
+            proto_match = (self.protocol is None or self.protocol == 'any' or self.protocol == 'Any'
+                           or str(self.protocol) == str(packet.protocol))
+            print(str(self.protocol) + " " + str(packet.protocol))
+            print(f"{src_IP_match} {des_IP_match} {src_port_match} {dest_port_match} {proto_match}")
 
             return src_IP_match and des_IP_match and dest_port_match and src_port_match and proto_match
 
@@ -158,6 +165,8 @@ class Layer3Firewall:
             proto = ""
             if self.protocol is None:
                 proto = "Any"
+            else:
+                proto = self.protocol
             if self.src_port is None or self.src_port == 0:
                 srcPort = "Any"
             else:
@@ -178,4 +187,4 @@ class Layer3Firewall:
             else:
                 desIP = str(self.dest_ip_range)
 
-            print(f'{self.description} {srcPort} {srcIP} {desIP} {desPort} {self.action}')
+            print(f'{self.description} {proto} {srcPort} {srcIP} {desIP} {desPort} {self.action}')

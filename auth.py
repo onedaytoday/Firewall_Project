@@ -87,13 +87,13 @@ class MerakiDash:
 
         # srcPort
         if rule.get('srcPort') == 'Any':
-            src_port = 0
+            src_port = None
         else:
             src_port = int(rule.get('srcPort'))
 
         # destPort
         if rule.get('destPort') == 'Any':
-            dest_port = 0
+            dest_port = None
         else:
             dest_port = int(rule.get('destPort'))
 
@@ -125,7 +125,8 @@ class MerakiDash:
             src_ip_range=src_ip_range,
             dest_ip_range=dest_ip_range,
             srcport=src_port,
-            destport=dest_port
+            destport=dest_port,
+            protocol=rule.get('protocol')
         )
 
         return output
