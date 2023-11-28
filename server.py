@@ -77,10 +77,6 @@ def default_handler():
 
 @app.route('/server', methods=['POST'])
 def server_request_handler():
-    print(request.get_data().decode())
-    print(request.get_json())
-    print(request.get_json().get('code'))
-
     data = "SecretCode"
     response = Flask.response_class(
         response=data,
@@ -266,7 +262,7 @@ def upload_csv_and_check():
         MX = auth.MerakiDash(key)
         MX.fetch_network(serial)
 
-        FileFirewallCheck.CSVPacketChecker(filename, MX)
+        FileFirewallCheck.CSVPacketChecker(path, MX)
         return send_file(path, as_attachment=True)
 
     except Exception as e:
