@@ -85,3 +85,18 @@ body{
     width: 30px;
     margin-left: 50%;
 }
+#About{
+    padding: 12px;
+    margin-top: 20px;
+    width: 300px;
+    height:250px;
+    background-color: white;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 50px;
+    border-radius: 25px;
+    text-align: left;
+    display:none;
+    font-family: sharp sans;
+}
+
