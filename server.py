@@ -204,7 +204,6 @@ def respond_to_exception(e):
     elif isinstance(e, Errors.InvalidSourceIP):
         Error = "Invalid Source IP"
         Status = 705
-
     elif isinstance(e, Errors.InvalidDestinationIP):
         Error = "Invalid Destination IP"
         Status = 706
@@ -217,6 +216,9 @@ def respond_to_exception(e):
     elif isinstance(e, Errors.SerialNumberIsNotMX):
         Error = "InvalidFile"
         Status = 709
+    elif isinstance(e, Errors.InvalidPort):
+        Error = "Invalid port number"
+        Status = 710
 
     response = Flask.response_class(
         response=Error,

@@ -126,7 +126,7 @@ class Layer3Firewall:
         def matches_rule(self, packet):
             self.print()
             src_port_match = (self.src_port is None or self.src_port == None or
-                              self.src_port == 0 or str(self.dest_port) == str(packet.dest_port))
+                              self.src_port == 0 or str(self.src_port) == str(packet.src_port))
             dest_port_match = (self.dest_port is None or self.dest_port == None or
                                self.dest_port == 0 or str(self.dest_port) == str(packet.dest_port))
 

@@ -25,6 +25,9 @@ class InvalidSourceIP(DashExceptions):
 class InvalidDestinationIP(DashExceptions):
     pass
 
+class InvalidPort(DashExceptions):
+    pass
+
 
 class MissMatchedIPTypes(DashExceptions):
     pass
