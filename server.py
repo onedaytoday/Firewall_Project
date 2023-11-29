@@ -136,7 +136,7 @@ def check_code_and_serial_and_firewall():
                                    destport=req.get(destPortVariableName),
                                    source_ip=req.get(srcIPVariableName),
                                    destination_ip=req.get(destIPVariableName),
-                                   protocol=req.get(protocolVariableName)
+                                       protocol=req.get(protocolVariableName)
                                    )
 
         TestPacket.print()
