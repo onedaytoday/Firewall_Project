@@ -12,7 +12,7 @@ class MerakiDash:
         self.vlan_subnet_mapping = {}
         self.jsonRules = None
         try:
-            self.session = meraki.DashboardAPI(api_key=key, output_log=False, print_console=False, suppress_logging=True)
+            self.session = meraki.DashboardAPI(api_key=key, output_log=False, suppress_logging=True)
         except:
             raise Errors.WrongDashKey()
 
@@ -59,7 +59,7 @@ class MerakiDash:
             vlan_id = vlan['id']
             vlan_subnet = vlan['subnet']
             self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"] = [ipaddress.ip_network(vlan_subnet)]
-            if (vlan['ipv6'] is not None):
+            if vlan['ipv6'] is not None and vlan.get('ipv6').get('prefixAssignments') is not None:
                 ipv6 = vlan.get('ipv6').get('prefixAssignments')[0].get('staticPrefix')
                 if (ipv6 is not None):
                     self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"].append(ipaddress.ip_network(ipv6))
