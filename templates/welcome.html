@@ -6,23 +6,36 @@
     <link rel="icon" type="image/png" href="favicon.png"/>
     <title>Welcome</title>
     <link rel="stylesheet" href="welcome.css">
-    
+   
 </head>
 <body>
     <div class="navbar"><img class="logo" src="logo3.jpg"></div>
-    <div class="center"> 
+    <div class="center">
         <div class='Welcome'>Welcome</div>
-        <div class="info">This is our Fall 2023 intern Project. This project is based on the current methods of checking firewall policies. We sought out to make this method simplier to only for the customers but for the NSEs 
+        <div class="info">This is our Fall 2023 intern Project. This project is based on the current methods of checking firewall policies. We sought out to make this method simplier not only for Meraki clients but for the NSEs
             troubleshooting related issues.
         </div>
         <div class="Bar">
             <a href="hello.html"><div class="topic"><b> Begin!</b></div></a>
-            <div class="topic"><b>About Us</b></div>
+            <a href="#About"><div class="topic" onclick="showContent()"><b>About Us</b></div></a>
             <div class="topic"><b>KB</b></div>
            
          </div>
-        
-        
+
+
+         <div class="About" id="About">This project was divided into 4 components. <br> <b>Ethan Royce</b> worked on the backend and quality assurance.<br>
+            <b>Daya Perry</b> worked on the frontend and server communication. <br> <b>Isaac Thompson</b> worked on the research.<br><b>Omid Najibzadeh</b> worked on the backend.
+             
+         </div>
+       
+       
     </div>
+
+
+    <script>
+         function showContent(){
+            document.getElementById("About").style.display = "block";
+         }
+    </script>
 </body>
 </html>
