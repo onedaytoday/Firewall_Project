@@ -8,4 +8,4 @@ context = ('www_ideoproject_net.crt', 'PRIVATEKEY.key')  # crt , key
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host=PublicIP, port=HTTPS, ssl_context=context)
+    app.run(debug=False, host=AllIP, port=HTTPS, ssl_context=context)
