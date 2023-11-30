@@ -58,6 +58,16 @@ def home_page_logo():
     return send_file("templates/logo3.jpg", mimetype='image/jpg')
 
 
+@app.route(rule='/concept', methods=['GET'])
+def send_concept():
+    return send_file("templates/concept.pdf", mimetype='application/pdf')
+
+
+@app.route(rule='/concept.pdf', methods=['GET'])
+def send_concept_pdf():
+    return send_file("templates/concept.pdf", mimetype='application/pdf')
+
+
 @app.route('/', methods=['POST'])
 def default_handler():
     response = Flask.response_class(
@@ -84,13 +94,13 @@ def test_code_and_serial():
         MX = auth.MerakiDash(req.get(keyVariableName))
         MX.fetch_network(req.get(serialVariableName))
         MXFirewall = MX.get_firewall()
-        #MXFirewall.print()
+        # MXFirewall.print()
         TestPacket = Packet.Packet(srcport=0,
                                    destport=0,
                                    source_ip=ipaddress.ip_address('172.16.1.4'),
                                    destination_ip=ipaddress.ip_address('172.16.2.1')
                                    )
-        #TestPacket.print()
+        # TestPacket.print()
         outcome = MXFirewall.filter(TestPacket)
         data = TestPacket.to_string() + " is " + outcome.get_value()
         response = Flask.response_class(
@@ -136,19 +146,19 @@ def check_code_and_serial_and_firewall():
                                    destport=req.get(destPortVariableName),
                                    source_ip=req.get(srcIPVariableName),
                                    destination_ip=req.get(destIPVariableName),
-                                       protocol=req.get(protocolVariableName)
+                                   protocol=req.get(protocolVariableName)
                                    )
 
         TestPacket.print()
         outcome, matched_rule = MXFirewall.find_matching_rule(TestPacket)
-        #print(outcome.get_value())
+        # print(outcome.get_value())
         output = json.dumps([outcome.get_value(), matched_rule.get_rule_json()])
-        #print(output)
+        # print(output)
         response = Flask.response_class(
             response=output,
             status="200"
         )
-        #print(outcome)
+        # print(outcome)
         return response
     except Exception as e:
         return respond_to_exception(e)
