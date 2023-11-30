@@ -32,7 +32,7 @@ class Packet:
     def set_src_port(self, port):
         try:
             self.src_port = port
-            if port is None or port is '':
+            if port is None or port == '':
                 None
             elif not (0 < int(port) < 65536):
                 raise Exception()
@@ -42,7 +42,7 @@ class Packet:
     def set_dest_port(self, port):
         try:
             self.dest_port = port
-            if port is None or port is '':
+            if port is None or port == '':
                 None
             elif not (0 < int(port) < 65536):
                 raise Exception()
