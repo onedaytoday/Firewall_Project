@@ -34,7 +34,7 @@
         <div class="content" id="content2">
                 <p id="rightPage">Network Name:</p>
                 <div id="Deviceinfo"></div>
-                <div class="buttonBox"><button id="DeviceButton" onclick="showContent(3)">Firewall Info</button></div>
+                <div class="buttonBox"><button id="DeviceButton" onclick="showContent(3)">Test Firewall Policy</button></div>
                 <div class="buttonBox"><button id="DeviceButton" onclick="show_all_firewall()">Display ALL Firewalls</button></div>
         </div>
 
@@ -61,8 +61,30 @@
                         </form>
 
                 </div>
-                <div class="buttonBox"><button id="DeviceButton" onclick="send_Firewall_Info()">Check Firewalls</button></div>
-                <div id="Display_Firewall_Info"></div>
+                <div class="buttonBox"><button id="DeviceButton"  onclick="send_Firewall_Info()">Check Firewalls</button></div>
+                <div id="Display_Firewall_Info">
+                        <table style="width:100%">
+                                <tr>
+                                  <th>Policy</th>
+                                  <th>Comment</th>
+                                  <th>destCidr</th>
+                                  <th>destPort</th>
+                                  <th>srcCidr</th>
+                                  <th>srcPort</th>
+                                  <th>syslogEnabled</th>
+                                </tr>
+                                <tr>
+                                  <td id="policy"></td>
+                                  <td  id="comment"></td>
+                                  <td id="destCidr"></td>
+                                  <td id="destPort"></td>
+                                  <td id="srcCidr"></td>
+                                  <td id="srcPort"></td>
+                                  <td id="syslogEnabled"></td>
+                                </tr>
+                        </table>
+                
+                </div>
       
         </div>
         
@@ -226,6 +248,7 @@
                }
 
                function send_Firewall_Info(){//test packet
+                showTable()
                 var srcIP = document.getElementById("SourceIp").value;
                 var destIP = document.getElementById("DesIp").value;
                 var srcPort = document.getElementById("SrcPort").value;
@@ -249,13 +272,38 @@
 
                 xhr.send(output);
                 xhr.onload = function(){
-                       document.getElementById('Display_Firewall_Info').innerHTML = xhr.response
-                console.log(xhr.response)
+                       
+                       var jsonVal = JSON.parse(xhr.response)
+                       var test_output= ""
+                       jData = JSON.parse(jsonVal[1])
+                        appendData(jData)
+                        console.log(jData)
                 }
 
                 //
                 //send error if serial and api were no filled out
                }
+               function showTable(){
+            document.getElementById("Display_Firewall_Info").style.display = "block";
+         }
+               function appendData(data){
+                document.getElementById('policy').innerHTML = jData.policy;
+                document.getElementById('comment').innerHTML = jData.comment;
+                document.getElementById('destCidr').innerHTML =  jData.destCidr;
+                document.getElementById('destPort').innerHTML =  jData.destPort;
+                document.getElementById('srcCidr').innerHTML =  jData.srcCidr;
+                document.getElementById('srcPort').innerHTML = jData.srcPort;
+                document.getElementById('syslogEnabled').innerHTML =  jData.syslogEnabled;
+                /*Object.keys(data).forEach(function(key) {
+                        document.getElementById('Display_Firewall_Info').innerHTML += (key + ': ' + data[key] + " \n")
+                        
+                })*/
+                       
+                        
+        
+                
+               }
+
              //function to display all firewall
                 function convert(data) {
                         counter++;
