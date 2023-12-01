@@ -124,7 +124,7 @@ class Layer3Firewall:
             }
 
         def matches_rule(self, packet):
-            self.print()
+            #self.print()
             src_port_match = (self.src_port is None or self.src_port == None or
                               self.src_port == 0 or str(self.src_port) == str(packet.src_port))
             dest_port_match = (self.dest_port is None or self.dest_port == None or
@@ -147,8 +147,8 @@ class Layer3Firewall:
 
             proto_match = (self.protocol is None or self.protocol == 'any' or self.protocol == 'Any'
                            or str(self.protocol) == str(packet.protocol))
-            print(str(self.protocol) + " " + str(packet.protocol))
-            print(f"{src_IP_match} {des_IP_match} {src_port_match} {dest_port_match} {proto_match}")
+            #print(str(self.protocol) + " " + str(packet.protocol))
+            #print(f"{src_IP_match} {des_IP_match} {src_port_match} {dest_port_match} {proto_match}")
 
             return src_IP_match and des_IP_match and dest_port_match and src_port_match and proto_match
 
