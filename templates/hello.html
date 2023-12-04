@@ -21,12 +21,12 @@
         </div>
 
         <div class="left">
-                <p id="leftPage">Enter your API Key:</p>
+                <p id="leftPage">Enter your API Key:<i></i> </p>
         <input type="text" class="API" name="API" id="Api" placeholder="API Key.."><br><br>
         <p id="leftPage">Enter your serial number:</p>
         <input type="text"  class="Snum" name="Snum" id="Snum" placeholder="Serial number.."><br><br>
         <div class="buttonBox"><button onclick="send_Serialapi()">Go To Device</button></div>
-        <div id="info"></div>
+        <div id="info"></div> 
         </div>
         
 
@@ -34,7 +34,7 @@
         <div class="content" id="content2">
                 <p id="rightPage">Network Name:</p>
                 <div id="Deviceinfo"></div>
-                <div class="buttonBox"><button id="DeviceButton" onclick="showContent(3)">Test Firewall Policy</button></div>
+                <div class="buttonBox"><button id="DeviceButton" onclick="showContent(3)">Test Firewall Rule</button></div>
                 <div class="buttonBox"><button id="DeviceButton" onclick="show_all_firewall()">Display ALL Firewalls</button></div>
         </div>
 
@@ -42,11 +42,11 @@
         
         <div class="content" id="content3">
                 <div class="row1">
-                        <p id="rightPage">Please Enter Source IP:</p>
+                        <p id="rightPage">Enter Source IP:</p>
                         <input type="'text" class="inputBox" name=" SourceIp" id="SourceIp" placeholder="e.g., 192.168.0.1">
-                        <p id="rightPage">Please Enter Destination IP:</p>
+                        <p id="rightPage">Enter Destination IP:</p>
                         <input type="text" class="inputBox" name="DesIp" id="DesIp" placeholder="e.g., 192.168.0.100">
-                        <p id="rightPage">Enter Source port:</p>
+                        <p id="rightPage">Source port:</p>
                         <input type="text" class="inputBox" name="SrcPort" id="SrcPort" placeholder="e.g., 22, 80,443">
                         <p id="rightPage">Enter Destination Port:</p>
                         <input type="text" class="inputBox" name="DesPort" id="DesPort" placeholder="e.g., 22, 80,443">
@@ -62,6 +62,8 @@
 
                 </div>
                 <div class="buttonBox"><button id="DeviceButton"  onclick="send_Firewall_Info()">Check Firewalls</button></div>
+
+                <div id="result"></div>
                 <div id="Display_Firewall_Info">
                         <table style="width:100%">
                                 <tr>
@@ -97,7 +99,7 @@
                 var counter=0;
                 var Snum;
                 var Api;
-                var domain="";
+                var domain="http://127.0.0.1:5000";
 
 
                 function show_all_firewall(){
@@ -248,7 +250,7 @@
                }
 
                function send_Firewall_Info(){//test packet
-                showTable()
+               
                 var srcIP = document.getElementById("SourceIp").value;
                 var destIP = document.getElementById("DesIp").value;
                 var srcPort = document.getElementById("SrcPort").value;
@@ -272,12 +274,21 @@
 
                 xhr.send(output);
                 xhr.onload = function(){
-                       
-                       var jsonVal = JSON.parse(xhr.response)
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                                document.getElementById('result').innerHTML="";
+                                showTable()
+                                var jsonVal = JSON.parse(xhr.response)
                        var test_output= ""
                        jData = JSON.parse(jsonVal[1])
                         appendData(jData)
                         console.log(jData)
+                        }
+                        else{
+                                document.getElementById("Display_Firewall_Info").style.display ="none";
+                                document.getElementById('result').innerHTML= xhr.response;
+                        }
+                       
+                      
                 }
 
                 //

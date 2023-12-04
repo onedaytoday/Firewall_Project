@@ -145,6 +145,9 @@ button{
     height: 60px;
 }
 
+#result{
+    color: red;
+}
 #Display_Firewall_Info{
     width:100%;
     height:100px;
