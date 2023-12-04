@@ -77,6 +77,16 @@ def default_handler():
     return response
 
 
+@app.route(rule='/kb', methods=['GET'])
+def send_kb():
+    return send_file("templates/kb.pdf", mimetype='application/pdf')
+
+
+@app.route(rule='/kb.pdf', methods=['GET'])
+def send_kb_pdf():
+    return send_file("templates/kb.pdf", mimetype='application/pdf')
+
+
 @app.route('/server', methods=['POST'])
 def server_request_handler():
     data = "SecretCode"
