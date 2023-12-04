@@ -93,6 +93,8 @@ class Layer3Firewall:
             proto = ""
             if self.protocol is None:
                 proto = "Any"
+            else:
+                proto = self.protocol
             if self.src_port is None or self.src_port == 0:
                 srcPort = "Any"
             else:
@@ -113,14 +115,13 @@ class Layer3Firewall:
                 desIP = str(self.dest_ip_range)
 
             return {
-                'comment': self.description,
-                'policy': self.action.value,
-                'protocol': proto,
-                'srcPort': srcPort,
-                'srcCidr': srcIP,
-                'destPort': desPort,
-                'destCidr': desIP,
-                'syslogEnabled': False
+                'Comment': self.description,
+                'Policy': self.action.value,
+                'Protocol': proto,
+                'Source Port': srcPort,
+                'Source CIDR': srcIP,
+                'Destination Port': desPort,
+                'Destination CIDR': desIP,
             }
 
         def matches_rule(self, packet):

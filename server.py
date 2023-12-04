@@ -68,6 +68,16 @@ def send_concept_pdf():
     return send_file("templates/concept.pdf", mimetype='application/pdf')
 
 
+@app.route(rule='/kb', methods=['GET'])
+def send_kb():
+    return send_file("templates/kb.pdf", mimetype='application/pdf')
+
+
+@app.route(rule='/kb.pdf', methods=['GET'])
+def send_kb_pdf():
+    return send_file("templates/kb.pdf", mimetype='application/pdf')
+
+
 @app.route('/', methods=['POST'])
 def default_handler():
     response = Flask.response_class(

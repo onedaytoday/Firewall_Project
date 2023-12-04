@@ -21,11 +21,21 @@ def parse_packet(line):
     )
 
 
+def parse_packet_with_description(line):
+    return Packet.Packet(
+        srcport=line[1],
+        source_ip=ipaddress.ip_address(line[2]),
+        destination_ip=ipaddress.ip_address(line[3]),
+        destport=line[4],
+        protocol=line[5]
+    )
+
+
 def convert_csv_to_packets(file):
     parsed_file = parse_csv(file)
     output = []
     for line in parsed_file:
-        new_packet = parse_packet(line)
+        new_packet = parse_packet_with_description(line)
         output.append(new_packet)
     return output
 
@@ -45,6 +55,7 @@ def check_csv_packet(file, firewall):
     packets = convert_csv_to_packets(file)
     results = firewall.filter_multiple(packets)
     return results
+
 
 def check_and_add_results_to_csv(input_file, output_file, firewall):
     results = check_csv_packet(input_file, firewall)

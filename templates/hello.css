@@ -86,6 +86,11 @@ img{
     font-size: 20px;
     color: black;
 }
+#Firewall_Error{
+    font-family: Sharp Sans;
+    font-size: 20px;
+    color: black;
+}
 #Deviceinfo{
     font-family: Sharp Sans;
 }

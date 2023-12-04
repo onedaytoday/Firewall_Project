@@ -22,7 +22,11 @@
 
         <div class="left">
                 <p id="leftPage">Enter your API Key:</p>
-        <input type="text" class="API" name="API" id="Api" placeholder="API Key.."><br><br>
+        <input type="text" class="API" name="API" id="Api" placeholder="API Key..">
+            <br/>
+        <a     style="font-family:Sharp Sans; font-size:13px" class="api" target=”_blank” href="https://documentation.meraki.com/General_Administration/Other_Topics/Cisco_Meraki_Dashboard_API">
+            How to get an API Key</a>
+            <br/>
         <p id="leftPage">Enter your serial number:</p>
         <input type="text"  class="Snum" name="Snum" id="Snum" placeholder="Serial number.."><br><br>
         <div class="buttonBox"><button onclick="send_Serialapi()">Go To Device</button></div>
@@ -62,25 +66,26 @@
 
                 </div>
                 <div class="buttonBox"><button id="DeviceButton"  onclick="send_Firewall_Info()">Check Firewalls</button></div>
+                <div id="Firewall_Error" style="display:none;"></div>
                 <div id="Display_Firewall_Info">
                         <table style="width:100%">
                                 <tr>
                                   <th>Policy</th>
                                   <th>Comment</th>
-                                  <th>destCidr</th>
-                                  <th>destPort</th>
-                                  <th>srcCidr</th>
-                                  <th>srcPort</th>
-                                  <th>syslogEnabled</th>
+                                  <th>Source CIDR</th>
+                                  <th>Source Port</th>
+                                  <th>Destination CIDR</th>
+                                  <th>Destination Port</th>
+
                                 </tr>
                                 <tr>
                                   <td id="policy"></td>
                                   <td  id="comment"></td>
-                                  <td id="destCidr"></td>
-                                  <td id="destPort"></td>
                                   <td id="srcCidr"></td>
                                   <td id="srcPort"></td>
-                                  <td id="syslogEnabled"></td>
+                                  <td id="destCidr"></td>
+                                  <td id="destPort"></td>
+
                                 </tr>
                         </table>
                 
@@ -248,7 +253,9 @@
                }
 
                function send_Firewall_Info(){//test packet
-                showTable()
+                document.getElementById("Firewall_Error").style.display = "block";
+                document.getElementById("Firewall_Error").innerHTML = "Processing";
+
                 var srcIP = document.getElementById("SourceIp").value;
                 var destIP = document.getElementById("DesIp").value;
                 var srcPort = document.getElementById("SrcPort").value;
@@ -271,13 +278,24 @@
                 proto:Protocol})
 
                 xhr.send(output);
+
+
                 xhr.onload = function(){
-                       
-                       var jsonVal = JSON.parse(xhr.response)
-                       var test_output= ""
-                       jData = JSON.parse(jsonVal[1])
-                        appendData(jData)
-                        console.log(jData)
+                       document.getElementById("Firewall_Error").style.display = "none";
+                       if(xhr.status != 200){
+                            document.getElementById("Display_Firewall_Info").style.display = "none";
+                            document.getElementById("Firewall_Error").style.display = "block";
+                            document.getElementById("Firewall_Error").innerHTML = xhr.response;
+
+                            return;
+                       }
+                       document.getElementById("Firewall_Error").style.display = "none";
+                       showTable()
+                       var jsonVal = JSON.parse(xhr.response);
+                       var test_output= "";
+                       jData = JSON.parse(jsonVal[1]);
+                        appendData(jData);
+                        console.log(jData);
                 }
 
                 //
@@ -286,14 +304,14 @@
                function showTable(){
             document.getElementById("Display_Firewall_Info").style.display = "block";
          }
+
                function appendData(data){
-                document.getElementById('policy').innerHTML = jData.policy;
-                document.getElementById('comment').innerHTML = jData.comment;
-                document.getElementById('destCidr').innerHTML =  jData.destCidr;
-                document.getElementById('destPort').innerHTML =  jData.destPort;
-                document.getElementById('srcCidr').innerHTML =  jData.srcCidr;
-                document.getElementById('srcPort').innerHTML = jData.srcPort;
-                document.getElementById('syslogEnabled').innerHTML =  jData.syslogEnabled;
+                document.getElementById('policy').innerHTML = jData['Policy'];
+                document.getElementById('comment').innerHTML = jData['Comment'];
+                document.getElementById('destCidr').innerHTML =  jData['Destination CIDR'];
+                document.getElementById('destPort').innerHTML =  jData['Destination Port'];
+                document.getElementById('srcCidr').innerHTML =  jData['Source CIDR'];
+                document.getElementById('srcPort').innerHTML = jData['Source Port'];
                 /*Object.keys(data).forEach(function(key) {
                         document.getElementById('Display_Firewall_Info').innerHTML += (key + ': ' + data[key] + " \n")
                         
