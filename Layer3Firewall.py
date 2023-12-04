@@ -93,6 +93,8 @@ class Layer3Firewall:
             proto = ""
             if self.protocol is None:
                 proto = "Any"
+            else:
+                proto = self.protocol
             if self.src_port is None or self.src_port == 0:
                 srcPort = "Any"
             else:
