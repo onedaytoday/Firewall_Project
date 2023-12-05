@@ -133,7 +133,9 @@ def get_firewall():
         print(request)
         req = request.get_json()
         dash = auth.MerakiDash(req.get(keyVariableName))
+        print('A')
         dash.fetch_network(req.get(serialVariableName))
+        print('B')
         firewall = dash.get_firewall()
         firewall.print()
         output = firewall.get_firewall_rules_json()
@@ -152,7 +154,9 @@ def check_code_and_serial_and_firewall():
     print(req)
     try:
         MX = auth.MerakiDash(req.get(keyVariableName))
+        print('A1')
         MX.fetch_network(req.get(serialVariableName))
+        print('B1')
         MXFirewall = MX.get_firewall()
         TestPacket = Packet.Packet(srcport=req.get(srcPortVariableName),
                                    destport=req.get(destPortVariableName),
@@ -193,11 +197,13 @@ def check_key():
 @app.route(rule='/check_key_and_serial', methods=['POST'])
 def check_key_and_serial():
     try:
+        print(request)
         req = request.get_json()
+        print(req)
         dash = auth.MerakiDash(req.get(keyVariableName))
         dash.fetch_network(req.get(serialVariableName))
         info = dash.get_network_info()
-
+        print(info)
         response = Flask.response_class(
             response=info,
             status="200"
