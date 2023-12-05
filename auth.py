@@ -7,12 +7,13 @@ import json
 import meraki
 import Errors
 
+
 class MerakiDash:
     def __init__(self, key):
         self.vlan_subnet_mapping = {}
         self.jsonRules = None
         try:
-            self.session = meraki.DashboardAPI(api_key=key, output_log=False, suppress_logging=True)
+            self.session = meraki.DashboardAPI(api_key=key, output_log=True, suppress_logging=False)
         except:
             raise Errors.WrongDashKey()
 
@@ -29,12 +30,15 @@ class MerakiDash:
             raise Errors.NoNetworkFound()
         if not 'MX' in device.get('model'):
             raise Errors.SerialNumberIsNotMX()
-
-        self.resolveVLANIDtoIP()
+        try:
+            self.resolveVLANIDtoIP()
+        except:
+            raise Errors.VLANProblems()
 
     def get_network_info(self):
         networkInfo = self.session.networks.getNetwork(self.networkId)
         return networkInfo.get('name')
+
     @staticmethod
     def print_json_nicely(a):
         text = json.dumps(a, sort_keys=True, indent=4)
@@ -52,14 +56,22 @@ class MerakiDash:
         return Layer3Firewall.Layer3Firewall(FireWallRules)
 
     def resolveVLANIDtoIP(self):  # Method that handles turning a VLAN ID into CIDR
-        self.VLANinfo = self.session.appliance.getNetworkApplianceVlans(self.networkId)
-        time.sleep(.5)
-
+        try:
+            self.VLANinfo = self.session.appliance.getNetworkApplianceVlans(self.networkId)
+        except:
+            raise Errors.VLANProblems()
+        print("1")
+        print(self.VLANinfo)
+        if self.VLANinfo == None or self.VLANinfo == []:
+            return
+        print("2")
         for vlan in self.VLANinfo:
             vlan_id = vlan['id']
             vlan_subnet = vlan['subnet']
             self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"] = [ipaddress.ip_network(vlan_subnet)]
-            if vlan['ipv6'] is not None and vlan.get('ipv6').get('prefixAssignments') is not None:
+            if (vlan.get('ipv6') is not None and vlan.get('ipv6').get('prefixAssignments') is not None
+                    and vlan.get('ipv6').get('prefixAssignments')[0] is not None and
+                    vlan.get('ipv6').get('prefixAssignments')[0].get('staticPrefix') is not None):
                 ipv6 = vlan.get('ipv6').get('prefixAssignments')[0].get('staticPrefix')
                 if (ipv6 is not None):
                     self.vlan_subnet_mapping[f"VLAN({vlan_id}).*"].append(ipaddress.ip_network(ipv6))

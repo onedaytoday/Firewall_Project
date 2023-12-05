@@ -37,3 +37,6 @@ class SerialNumberIsNotMX(DashExceptions):
 
 class InvalidFile(DashExceptions):
     pass
+
+class VLANProblems(DashExceptions):
+    pass
