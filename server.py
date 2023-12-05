@@ -130,10 +130,12 @@ def test_code_and_serial():
 @app.route('/get-firewall', methods=['POST'])
 def get_firewall():
     try:
+        print(request)
         req = request.get_json()
         dash = auth.MerakiDash(req.get(keyVariableName))
         dash.fetch_network(req.get(serialVariableName))
         firewall = dash.get_firewall()
+        firewall.print()
         output = firewall.get_firewall_rules_json()
         response = Flask.response_class(
             response=output,
