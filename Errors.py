@@ -40,3 +40,11 @@ class InvalidFile(DashExceptions):
 
 class VLANProblems(DashExceptions):
     pass
+
+
+class OrgIDProblem(DashExceptions):
+    pass
+
+
+class ObjectResolutionProblems(DashExceptions):
+    pass

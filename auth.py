@@ -11,7 +11,10 @@ import Errors
 class MerakiDash:
     def __init__(self, key):
         self.vlan_subnet_mapping = {}
+        self.object_subnet_mapping = {}
         self.jsonRules = None
+        self.orgID = None
+        self.networkId = None
         try:
             self.session = meraki.DashboardAPI(api_key=key, output_log=True, suppress_logging=False)
         except:
@@ -28,12 +31,24 @@ class MerakiDash:
             self.networkId = device.get('networkId')
         except:
             raise Errors.NoNetworkFound()
+
+        try:
+            network = self.session.networks.getNetwork(self.networkId)
+            self.orgID = network.get('organizationId')
+        except:
+            raise Errors.OrgIDProblem()
+
         if not 'MX' in device.get('model'):
             raise Errors.SerialNumberIsNotMX()
         try:
             self.resolveVLANIDtoIP()
         except:
             raise Errors.VLANProblems()
+
+        try:
+            self.resolveObjectstoIP()
+        except:
+            raise Errors.ObjectResolutionProblems()
 
     def get_network_info(self):
         networkInfo = self.session.networks.getNetwork(self.networkId)
@@ -50,8 +65,11 @@ class MerakiDash:
         FireWallRules = []
         self.jsonRules = Layer3Rules.get('rules')
         for rule in Layer3Rules.get('rules'):
-            createdRule = self.__parse_firewall_rule(rule)
-            FireWallRules.append(createdRule)
+            try:
+                createdRule = self.__parse_firewall_rule(rule)
+                FireWallRules.append(createdRule)
+            except:
+                continue
 
         return Layer3Firewall.Layer3Firewall(FireWallRules)
 
@@ -60,11 +78,8 @@ class MerakiDash:
             self.VLANinfo = self.session.appliance.getNetworkApplianceVlans(self.networkId)
         except:
             raise Errors.VLANProblems()
-        print("1")
-        print(self.VLANinfo)
         if self.VLANinfo == None or self.VLANinfo == []:
             return
-        print("2")
         for vlan in self.VLANinfo:
             vlan_id = vlan['id']
             vlan_subnet = vlan['subnet']
@@ -80,6 +95,10 @@ class MerakiDash:
         if ip_cidr in self.vlan_subnet_mapping:
             return self.vlan_subnet_mapping[ip_cidr]
         return ip_cidr
+
+    def get_object_resolution(self, obj_id):
+        if obj_id in self.object_subnet_mapping:
+            return self.object_subnet_mapping[obj_id]
 
     def __parse_firewall_rule(self, rule):
         name = None
@@ -117,6 +136,9 @@ class MerakiDash:
                 if 'VLAN' in thisRule:
                     temp = thisRule
                     src_ip_range.extend((self.get_vlan_id(temp)))
+                elif 'OBJ' in thisRule:
+                    temp = thisRule
+                    src_ip_range.extend(self.get_object_resolution(temp))
                 else:
                     src_ip_range.append(ipaddress.ip_network(thisRule))
 
@@ -128,6 +150,9 @@ class MerakiDash:
                 if 'VLAN' in thisRule:
                     temp = thisRule
                     dest_ip_range.extend((self.get_vlan_id(temp)))
+                elif 'OBJ' in thisRule:
+                    temp = thisRule
+                    dest_ip_range.extend(self.get_object_resolution(temp))
                 else:
                     dest_ip_range.append(ipaddress.ip_network(thisRule))
 
@@ -142,3 +167,13 @@ class MerakiDash:
         )
 
         return output
+
+    def resolveObjectstoIP(self):
+        objects = self.session.organizations.getOrganizationPolicyObjects(self.orgID)
+        for object in objects:
+            if object.get('category') == 'network' and object.get('type') == 'cidr':
+                objectID = object.get('id')
+                objectCIDR = object.get('cidr')
+                self.object_subnet_mapping[f"OBJ({objectID})"] = [ipaddress.ip_network(objectCIDR)]
+
+

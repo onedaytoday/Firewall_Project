@@ -130,14 +130,12 @@ def test_code_and_serial():
 @app.route('/get-firewall', methods=['POST'])
 def get_firewall():
     try:
-        print(request)
+        #print(request)
         req = request.get_json()
         dash = auth.MerakiDash(req.get(keyVariableName))
-        print('A')
         dash.fetch_network(req.get(serialVariableName))
-        print('B')
         firewall = dash.get_firewall()
-        firewall.print()
+        #firewall.print()
         output = firewall.get_firewall_rules_json()
         response = Flask.response_class(
             response=output,
@@ -151,12 +149,10 @@ def get_firewall():
 @app.route('/check', methods=['POST'])
 def check_code_and_serial_and_firewall():
     req = request.get_json()
-    print(req)
+    #print(req)
     try:
         MX = auth.MerakiDash(req.get(keyVariableName))
-        print('A1')
         MX.fetch_network(req.get(serialVariableName))
-        print('B1')
         MXFirewall = MX.get_firewall()
         TestPacket = Packet.Packet(srcport=req.get(srcPortVariableName),
                                    destport=req.get(destPortVariableName),
@@ -197,13 +193,13 @@ def check_key():
 @app.route(rule='/check_key_and_serial', methods=['POST'])
 def check_key_and_serial():
     try:
-        print(request)
+        #print(request)
         req = request.get_json()
-        print(req)
+        #print(req)
         dash = auth.MerakiDash(req.get(keyVariableName))
         dash.fetch_network(req.get(serialVariableName))
         info = dash.get_network_info()
-        print(info)
+        #print(info)
         response = Flask.response_class(
             response=info,
             status="200"
@@ -250,7 +246,9 @@ def respond_to_exception(e):
     elif isinstance(e, Errors.VLANProblems):
         Error = "Invalid port number"
         Status = 711
-
+    elif isinstance(e, Errors.DashExceptions):
+        Error = str("BackEnd Exception")
+        Status = 800
     response = Flask.response_class(
         response=Error,
         status=str(Status)
