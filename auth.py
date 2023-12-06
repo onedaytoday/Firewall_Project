@@ -16,7 +16,7 @@ class MerakiDash:
         self.orgID = None
         self.networkId = None
         try:
-            self.session = meraki.DashboardAPI(api_key=key, output_log=True, suppress_logging=False)
+            self.session = meraki.DashboardAPI(api_key=key, output_log=False, suppress_logging=True)
         except:
             raise Errors.WrongDashKey()
 
